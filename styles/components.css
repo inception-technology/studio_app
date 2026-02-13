@@ -1,0 +1,15 @@
+/* components.css */
+
+/* AuthLayout page */
+.left-container-section {
+    align-items: center;
+    padding: 2rem;
+}
+.right-container-section {
+    align-items: center;
+    justify-content: center;
+}
+.left-sidebar-footer {
+    position:absolute;
+    bottom:10px;
+}
