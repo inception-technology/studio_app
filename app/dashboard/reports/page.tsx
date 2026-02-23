@@ -1,13 +1,9 @@
 "use client";
 import DashboardHeader from "@/components/shared/DashboardHeader";
-//import { useAuth } from "@/contexts/AuthContext";
 const Reports = () => {
-  //const { user } = useAuth();
-  const user = { username: "john_doe" }; // Mock user for demonstration
-  const date = new Date();
   return (
     <div className="flex flex-col w-full p-6">
-      <DashboardHeader user_data={user} date={date} />
+      <DashboardHeader/>
       <h1 className="text-2xl font-bold text-gray-900 w-full border-b border-gray-300 pb-2">Reports</h1>
 
     </div>

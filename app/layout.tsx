@@ -1,21 +1,14 @@
 import type { Metadata } from "next";
-import { Quicksand, Inter, Geist, Geist_Mono } from "next/font/google";
-//import { AuthProvider } from "@/contexts/AuthContext";
+import { Quicksand } from "next/font/google";
+import { AuthProvider } from "@/contexts/AuthContext";
 import "./globals.css";
 import"@/styles/components.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const quicksand = Quicksand({
+  variable: "--font-quicksand", 
+  subsets: ["latin"], 
+  weight: ["400", "500", "600", "700"] 
 });
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const inter = Inter({variable: "--font-inter", subsets: ["latin"], });
-const quicksand = Quicksand({variable: "--font-quicksand", subsets: ["latin"], weight: ["400", "500", "600", "700"] });
 
 export const metadata: Metadata = {
   title: "App Dojang Studio",
@@ -38,9 +31,9 @@ export default function RootLayout({
           h-screen 
           flex flex-col`
         }>
-        {/* <AuthProvider> */}
+        <AuthProvider>
           {children}
-        {/* </AuthProvider> */}
+        </AuthProvider>
       </body>
     </html>
   );

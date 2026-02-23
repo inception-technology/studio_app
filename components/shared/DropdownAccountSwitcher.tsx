@@ -20,19 +20,15 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export default function DropdownAccountSwitcher() {
 
-  //const { user, logout } = useAuth();
-  const user = { username: "john_doe" }; // Mock user for demonstration
+  const { profile } = useAuth();
   const router = useRouter();
-
-  if (!user) return null;
-
+  // Handle logout functionality
   const handleLogout = async () => {
     await fetch("/api/auth/logout", {
       method: "POST",
       cache: "no-store",
       credentials: "include",
     }).catch(() => {});
-
     router.replace("/");
   };
 
@@ -48,7 +44,7 @@ export default function DropdownAccountSwitcher() {
             <AvatarFallback>LR</AvatarFallback>
           </Avatar>
           <div className="font-bold transition-colors">
-            {user.username.charAt(0).toUpperCase() + user.username.slice(1)}
+            {profile && `${profile.firstname.charAt(0).toUpperCase() + profile.firstname.slice(1)} ${profile.lastname.charAt(0).toUpperCase() + profile.lastname.slice(1)}`}
             </div>
         </Button>
       </DropdownMenuTrigger>
