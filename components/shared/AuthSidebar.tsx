@@ -7,7 +7,7 @@ export default function AuthSidebar() {
   return (
     <>
       <Link href="/" className="flex items-center justify-center w-full pt-20">
-        <Image src="/assets/logo_dojang.png" alt="logo" width={150} height={150} />
+        <Image src="/logo_dojang.png" alt="logo" width={150} height={150} />
       </Link>
       <h1 className="text-4xl font-bold text-white mt-6 text-center">DOJANG STUDIO</h1>
       <p className="text-gray-400 mt-4 text-center">Manage your Taekwondo studios with ease.</p>
