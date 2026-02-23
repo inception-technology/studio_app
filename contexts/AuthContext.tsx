@@ -130,8 +130,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const me = await refresh();
         if (!me) return false;
         await loadProfile();
-        // option: redirection si tu es sur /login
-        if (pathname === "/" || pathname?.startsWith("/login")) {
+        // option: redirection si tu es sur /auth/login
+        if (pathname === "/" || pathname?.startsWith("/auth/login")) {
           router.replace("/dashboard");
         }
         return true;
@@ -161,6 +161,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const me = await getMe();
       if (!alive) return;
+      // ✅ stop, ne pas relancer le composant si on est déjà unmounted
+      if (!me) {
+        setUser(null);
+        setIsLoading(false);
+        return; 
+      }
       setUser(me);
       if (me) {
         const p = await getProfile();
