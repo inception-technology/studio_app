@@ -51,7 +51,6 @@ export async function POST(req: Request): Promise<NextResponse> {
         }
         // 1c) read user info from FastAPI response
         const session: SessionData = await r.json();
-        console.log("Login response from API:", session);
 
         // 2) create server session
         const sid = newSessionId();
@@ -75,13 +74,13 @@ export async function POST(req: Request): Promise<NextResponse> {
         
         const res = NextResponse.json({ ok: true }, { status: 200 });
         res.cookies.set({
-        name: COOKIE,
-        value: sid,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: TTL,
+            name: COOKIE,
+            value: sid,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            path: "/",
+            maxAge: TTL,
         });
         return res;
     } catch (e) {
