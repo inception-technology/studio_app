@@ -3,12 +3,12 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
 
   const signupLink = "/auth/signup";
-  // TODO : AuthContext pour partager le state de l'utilisateur connecté dans toute l'app
-  //const { login } = useAuth();
+  const { login } = useAuth();
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -16,29 +16,21 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // login/logout appellent des endpoints qui gèrent la session côté serveur (création/destroy)
-  const login = useCallback(async (username: string, password: string): Promise<void> => {
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-      cache: "no-store",
-      credentials: "include",
-    });
-    if (!res.ok) {
-      const errorText = await res.text().catch(() => "Login failed");
-      throw new Error(errorText);
-    }
-  }, []);
+  const loginWithContext = useCallback(async (email: string, password: string): Promise<boolean> => {
+    return login(email, password);
+  }, [login]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
     try {
-      await login(username, password);
+      const ok = await loginWithContext(username, password);
+      if (!ok) {
+        setError("Email ou mot de passe invalide");
+        return;
+      }
       router.replace("/dashboard");
-      setTimeout(() => router.refresh(), 0);
     } catch (error) {
         setError(error instanceof Error ? error.message : "Login failed");
     } finally {

@@ -28,7 +28,7 @@ async function fetchDashboardData(): Promise<Users | null> {
 }
 
 const Dashboard = () => {
-  const { user, isLoading, isAuthenticated } = useAuth();
+  const { isLoading, isAuthenticated } = useAuth();
   const router = useRouter();
   const [dashboardData, setDashboardData] = useState<Users | null>(null);
 
@@ -36,7 +36,7 @@ const Dashboard = () => {
     if (isLoading) return;
 
     if (!isAuthenticated) {
-      router.replace("/");
+      router.replace("/auth/login");
       return;
     }
 
