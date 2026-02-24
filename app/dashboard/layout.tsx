@@ -1,5 +1,5 @@
 "use client";
-import UserSidebar from "@/components/shared/UserSidebar";
+import UserSidebar from "@/components/shared/DashboardSidebar";
 import { RequireAuth } from "@/components/shared/RequireAuth";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { House, Wallet, Store, ChartBarBig } from "lucide-react";

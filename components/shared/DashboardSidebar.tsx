@@ -54,7 +54,7 @@ export default function UserSidebar(
           hover:text-white focus:text-white"
           >
             <Image
-              src="/assets/logo_dojang.png"
+              src="/logo_dojang.png"
               alt="logo"
               width={50}
               height={50}
