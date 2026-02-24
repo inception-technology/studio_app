@@ -48,5 +48,5 @@ export async function GET(): Promise<NextResponse> {
     await createSession(sid, session);
   }
   // si tout est ok, on retourne les données de session (userId, etc.)
-  return NextResponse.json({ message: "Success", data: session.data.user }, { status: 200 });
+  return NextResponse.json( session.data.user , { status: 200 });
 }

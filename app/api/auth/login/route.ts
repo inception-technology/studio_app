@@ -1,5 +1,6 @@
+// app/api/auth/login/route.ts
 import { NextResponse } from "next/server";
-import { createSession, newSessionId, setCookie, getSession, SessionData, COOKIE, TTL } from "@/lib/session";
+import { createSession, newSessionId, setCookie, getSession, SessionData, cookieName, TTL } from "@/lib/session";
 
 type LoginRequest = {
     username: string;
@@ -74,7 +75,7 @@ export async function POST(req: Request): Promise<NextResponse> {
         
         const res = NextResponse.json({ ok: true }, { status: 200 });
         res.cookies.set({
-            name: COOKIE,
+            name: cookieName(),
             value: sid,
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
@@ -82,6 +83,7 @@ export async function POST(req: Request): Promise<NextResponse> {
             path: "/",
             maxAge: TTL,
         });
+
         return res;
     } catch (e) {
         //TODO Redirect to error page with message instead of just returning text

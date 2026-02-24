@@ -1,3 +1,4 @@
+// lib/session.ts
 import crypto from "crypto";
 import { redis } from "./redis";
 import { cookies } from "next/headers";

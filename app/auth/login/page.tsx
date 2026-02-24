@@ -1,3 +1,4 @@
+// app/auth/login/page.tsx
 "use client";
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
@@ -37,7 +38,7 @@ export default function LoginPage() {
     try {
       await login(username, password);
       router.replace("/dashboard");
-      router.refresh();
+      setTimeout(() => router.refresh(), 0);
     } catch (error) {
         setError(error instanceof Error ? error.message : "Login failed");
     } finally {

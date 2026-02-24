@@ -1,3 +1,4 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Quicksand } from "next/font/google";
 import { AuthProvider } from "@/contexts/AuthContext";
