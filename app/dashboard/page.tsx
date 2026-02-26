@@ -18,7 +18,7 @@ async function fetchDashboardData(): Promise<Users | null> {
         return null;
       }
       const data = await safeJson<Users>(res);
-      console.log("Fetched dashboard data:", data);
+
       if (!data) return null;
       return data;
   } catch (error) {
@@ -82,10 +82,10 @@ const Dashboard = () => {
           <tbody>
             {Array.isArray(dashboardData) ? (
               dashboardData.map((user) => (
-                <tr key={user.user_id}>
-                  <td className="border border-gray-300 p-2">{user.firstname} {user.lastname}</td>  
-                  <td className="border border-gray-300 p-2">{user.email}</td>
-                  <td className="border border-gray-300 p-2">{user.role_name}</td>
+                <tr key={user.data.user_id}>
+                  <td className="border border-gray-300 p-2">{user.data.firstname} {user.data.lastname}</td>  
+                  <td className="border border-gray-300 p-2">{user.data.email}</td>
+                  <td className="border border-gray-300 p-2">{user.data.role_name}</td>
                   <td className="border border-gray-300 p-2">
                     <button className="text-blue-500 hover:underline"><Pencil /></button>
                   </td>

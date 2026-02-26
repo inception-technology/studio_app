@@ -9,7 +9,7 @@ export type User = {
   id_organization: number;
 };
 
-export type UserProfile = {
+export type UserProfile = { data: {
   user_id: number;
   firstname: string;
   lastname: string;
@@ -29,7 +29,7 @@ export type UserProfile = {
   role_name: string;
   is_active: boolean;
   last_login_at: string;
-};
+}};
 
 export type Users = Array<UserProfile>;
 
@@ -105,7 +105,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const refresh = useCallback(async () => {
     const me = await getMe();
     setUser(me);
-    console.log("User refreshed:", me);
     if (!me) setProfile(null);
     return me;
   }, []);
@@ -113,7 +112,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loadProfile = useCallback(async () => {
     const p = await getProfile();
     setProfile(p);
-    console.log("Profile loaded:", p);
     return p;
   }, []);
 

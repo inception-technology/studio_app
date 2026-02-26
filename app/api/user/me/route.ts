@@ -54,7 +54,6 @@ export async function GET(): Promise<NextResponse> {
         }
         // 1c) read users info from FastAPI response
         const response = await r.json();
-        console.log("current user :", response);
 
         // 2) respond to client
         return NextResponse.json(
