@@ -5,7 +5,9 @@ import { cookies } from "next/headers";
 
 export const COOKIE = process.env.SESSION_COOKIE_NAME || "session_id";
 export const TTL = Number(process.env.SESSION_TTL_SECONDS || 60 * 60 * 24 * 7); 
-const store = new Map<string, SessionData>();
+const globalStore = global as typeof globalThis & { __sessionStore?: Map<string, SessionData> };
+if (!globalStore.__sessionStore) globalStore.__sessionStore = new Map();
+const store = globalStore.__sessionStore;
 
 // Session management (in-memory or Redis based on config)
 

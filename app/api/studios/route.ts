@@ -48,11 +48,16 @@ export async function GET(): Promise<NextResponse> {
             );
         }
         // 1c) read studios info from FastAPI response
-        const studios = await r.json();
-
+        const response = await r.json();
+        if (!response || !response.studios || !Array.isArray(response.studios)) {
+            return NextResponse.json(
+                { message: "Invalid response from API" }, 
+                { status: 500 }
+            );
+        }
         // 2) respond to client
         return NextResponse.json(
-            { message: "Success", data: studios }, 
+            { ...response.studios }, 
             { status: 200 }
         ); 
     } catch (error) {

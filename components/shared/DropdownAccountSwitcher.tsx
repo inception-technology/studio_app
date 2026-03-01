@@ -44,7 +44,11 @@ export default function DropdownAccountSwitcher() {
             <AvatarFallback>LR</AvatarFallback>
           </Avatar>
           <div className="font-bold transition-colors">
-            {profile && `${profile.data.firstname.charAt(0).toUpperCase() + profile.data.firstname.slice(1)} ${profile.data.lastname.charAt(0).toUpperCase() + profile.data.lastname.slice(1)}`}
+            {
+              profile && `${profile.firstname.charAt(0).toUpperCase() 
+              + profile.firstname.slice(1)} ${profile.lastname.charAt(0).toUpperCase() 
+              + profile.lastname.slice(1)}`
+            }
             </div>
         </Button>
       </DropdownMenuTrigger>

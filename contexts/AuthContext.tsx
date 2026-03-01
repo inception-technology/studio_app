@@ -9,7 +9,7 @@ export type User = {
   id_organization: number;
 };
 
-export type UserProfile = { data: {
+export type UserProfile = {
   user_id: number;
   firstname: string;
   lastname: string;
@@ -29,7 +29,7 @@ export type UserProfile = { data: {
   role_name: string;
   is_active: boolean;
   last_login_at: string;
-}};
+};
 
 export type Users = Array<UserProfile>;
 
@@ -157,6 +157,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let alive = true;
     (async () => {
     try {
+      // Hydratation initiale : on vérifie si on a déjà une session active
       const me = await getMe();
       if (!alive) return;
       // ✅ stop, ne pas relancer le composant si on est déjà unmounted
@@ -165,6 +166,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(false);
         return; 
       }
+      // Si on a une session, on charge le profil
       setUser(me);
       if (me) {
         const p = await getProfile();
@@ -177,11 +179,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (alive) setIsLoading(false);
     }
     })();
-
+    // Refresh périodique (ex: toutes les 4 minutes)
+    const interval = setInterval(() => refresh(), 4 * 60 * 1000);
     return () => {
       alive = false;
+      clearInterval(interval);
     };
-  }, []);
+  }, [refresh]);
 
   const value = useMemo<AuthContextValue>(
     () => ({

@@ -1,6 +1,6 @@
 "use client";
 import DashboardHeader from "@/components/shared/DashboardHeader";
-const Reports = () => {
+const ReportsPage = () => {
   return (
     <div className="flex flex-col w-full p-6">
       <DashboardHeader/>
@@ -10,4 +10,4 @@ const Reports = () => {
   )
 }
 
-export default Reports
+export default ReportsPage;

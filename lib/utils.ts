@@ -8,7 +8,6 @@ export async function safeJson<T>(res: Response): Promise<T | null> {
   if (!ct.includes("application/json")) return null;
   try {
     const json = await res.clone().json();
-    console.log("Parsed JSON response:", json);
     return (json ?? null) as T;
   } catch {
     return null;

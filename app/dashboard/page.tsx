@@ -1,36 +1,36 @@
 "use client";
 import DashboardHeader from "@/components/shared/DashboardHeader";
 import { useState, useEffect } from "react";
-import { useAuth, Users } from "@/contexts/AuthContext";
+import { useAuth, Users, UserProfile } from "@/contexts/AuthContext";
 import { safeJson } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { Pencil } from "lucide-react";
 
 // Function to fetch dashboard data (e.g., users list)
-async function fetchDashboardData(): Promise<Users | null> {
+async function fetchDashboardData(): Promise<UserProfile[]> {
   try {
-    //All users from current user organization
     const res = await fetch("/api/org/users", {
-        method: "GET",
-        cache: "no-store",
-      });
-      if (res.status !== 200) {
-        return null;
-      }
-      const data = await safeJson<Users>(res);
-
-      if (!data) return null;
-      return data;
+      method: "GET",
+      cache: "no-store",
+    });
+    if (!res.ok) return [];
+    const data = await safeJson<Users | UserProfile[]>(res);
+    const users: UserProfile[] = Array.isArray(data)
+      ? data
+      : data
+        ? Object.values(data)
+        : [];
+    return users;
   } catch (error) {
     console.error("Error fetching data:", error);
-    return null;
+    return [];
   }
 }
 
-const Dashboard = () => {
+const DashboardPage = () => {
   const { isLoading, isAuthenticated } = useAuth();
   const router = useRouter();
-  const [dashboardData, setDashboardData] = useState<Users | null>(null);
+  const [dashboardData, setDashboardData] = useState<UserProfile[]>([]);
 
   useEffect(() => {
     if (isLoading) return;
@@ -80,16 +80,20 @@ const Dashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(dashboardData) ? (
+             {dashboardData.length > 0 ? (
               dashboardData.map((user) => (
-                <tr key={user.data.user_id}>
-                  <td className="border border-gray-300 p-2">{user.data.firstname} {user.data.lastname}</td>  
-                  <td className="border border-gray-300 p-2">{user.data.email}</td>
-                  <td className="border border-gray-300 p-2">{user.data.role_name}</td>
+                <tr key={user.user_id ?? user.email}>
                   <td className="border border-gray-300 p-2">
-                    <button className="text-blue-500 hover:underline"><Pencil /></button>
+                    {`${user.firstname} ${user.lastname}`}
                   </td>
-                </tr> 
+                  <td className="border border-gray-300 p-2">{user.email}</td>
+                  <td className="border border-gray-300 p-2">{user.role_name}</td>
+                  <td className="border border-gray-300 p-2">
+                    <button className="text-blue-500 hover:underline">
+                      <Pencil />
+                    </button>
+                  </td>
+                </tr>
               ))
             ) : (
               <tr>
@@ -102,4 +106,4 @@ const Dashboard = () => {
     </div>
   );
 };
-export default Dashboard;
+export default DashboardPage;

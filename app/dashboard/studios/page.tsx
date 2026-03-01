@@ -11,9 +11,7 @@ type Studio = {
   name: string;
   country_code: string;
 };
-type Studios= {
-  studios: Studio[];  
-}
+type Studios = Array<Studio>;  
 
 async function fetchStudios(): Promise<Studios | null> {
   try {
@@ -27,8 +25,12 @@ async function fetchStudios(): Promise<Studios | null> {
         return null;
       }
       const data = await safeJson<Studios>(res);
-      if (!data) return null;
-      return data;
+      const studios:Studios = Array.isArray(data)
+        ? data
+        : data
+          ? Object.values(data)
+          : [];
+      return studios ;
   } catch (error) {
     console.error("Error fetching studios data:", error);
     return null;
@@ -36,10 +38,10 @@ async function fetchStudios(): Promise<Studios | null> {
 }
 
 
-const Studios = () => {
+const StudiosPage = () => {
   const { isLoading, isAuthenticated } = useAuth();
   const router = useRouter();
-  const [studiosData, setStudiosData] = useState<Studio[] | null>(null);
+  const [studiosData, setStudiosData] = useState<Studios | null>(null);
 
   useEffect(() => {
       if(!isLoading && !isAuthenticated) {
@@ -50,7 +52,7 @@ const Studios = () => {
         const [studiosData] = await Promise.all([
           fetchStudios()
         ]);
-        setStudiosData(studiosData ? studiosData.studios : null);
+        setStudiosData(studiosData ?? null);
       };
       loadData();
     }, [isLoading, isAuthenticated, router]);
@@ -96,4 +98,4 @@ const Studios = () => {
     </div>
   );
 };
-export default Studios;
+export default StudiosPage;

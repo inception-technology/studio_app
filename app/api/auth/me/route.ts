@@ -1,6 +1,6 @@
 // src/app/api/auth/me/route.ts
 import { NextResponse } from "next/server";
-import { getCookie, getSession, createSession, deleteSession } from "@/lib/session";
+import { setCookie, getCookie, getSession, createSession, deleteSession } from "@/lib/session";
 const EXP_SKEW = 60; // refresh 60s avant expiration
 
 async function refreshAccessToken(refreshToken: string) {
@@ -46,6 +46,7 @@ export async function GET(): Promise<NextResponse> {
       session.data.refresh_token = refreshed.refresh_token;
     }
     await createSession(sid, session);
+    await setCookie(sid); // renouvelle le maxAge du cookie
   }
   // si tout est ok, on retourne les données de session (userId, etc.)
   return NextResponse.json( session.data.user , { status: 200 });

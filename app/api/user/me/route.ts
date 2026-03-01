@@ -54,10 +54,15 @@ export async function GET(): Promise<NextResponse> {
         }
         // 1c) read users info from FastAPI response
         const response = await r.json();
-
+        if (!response || !response.me) {
+            return NextResponse.json(
+                { message: "Invalid response from API" }, 
+                { status: 500 }
+            );
+        }
         // 2) respond to client
         return NextResponse.json(
-            { message: "Success", data: response.me }, 
+            { ...response.me }, 
             { status: 200 }
         ); 
     } catch (error) {
