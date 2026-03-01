@@ -1,16 +1,9 @@
 "use client";
-import dynamic from "next/dynamic";
 import { useAuth } from "@/contexts/AuthContext";
-
-const DropdownAccountSwitcher = dynamic(
-  () => import("@/components/shared/DropdownAccountSwitcher"),
-  { ssr: false }
-);
 
 export default function DashboardHeader() {
   const { profile } = useAuth();
   const date = new Date();
-
   return (
     <div className="w-full flex items-center justify-between mt-4 mb-8">
       <div className="mb-4 text-lg flex flex-col items-center gap-2">

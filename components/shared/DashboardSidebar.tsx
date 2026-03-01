@@ -13,20 +13,17 @@ import {
   SidebarMenuSkeleton,
   SidebarGroupContent,
   SidebarGroup,
-  SidebarGroupLabel
+  SidebarGroupLabel,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem, DropdownMenu } from "../ui/dropdown-menu";
-
-// DropdownAccountSwitcher is un composant qui utilise des hooks et ne peut pas être rendu côté serveur, d'où le dynamic import avec ssr: false
-const DropdownAccountSwitcher = dynamic(
-  () => import("@/components/shared/DropdownAccountSwitcher"),
-  { ssr: false }
-);
+import DropdownAccountSwitcher from "./DropdownAccountSwitcher";
 
 export default function DashboardSidebar(
   { sidebarItems,
@@ -36,6 +33,21 @@ export default function DashboardSidebar(
     organization: { name: string };
   }
 ) {
+  const pathname = usePathname();
+  const { setOpen, setOpenMobile, isMobile, state } = useSidebar();
+
+  function isActive(url: string) {
+    // Exact match pour /dashboard, startsWith pour les sous-routes
+    return url === "/dashboard" ? pathname === url : pathname.startsWith(url);
+  }
+
+  function handleItemClick() {
+    if (isMobile) {
+      setOpenMobile(false);
+    } else {
+      setOpen(false);
+    }
+  }
 
   return (
   <Sidebar collapsible="icon">
@@ -68,21 +80,24 @@ export default function DashboardSidebar(
     <SidebarContent>
       <SidebarMenu>
         {sidebarItems.map((item) => (
-          <SidebarMenuItem key={item.name} className="flex items-center gap-5">
-            <SidebarMenuButton asChild size="lg" className="rounded-none px-5">
-              <Link
-                href={item.url}
-                className="
-                  h-15 flex items-center gap-2
-                  transition-colors
-                  hover:bg-gray-800 hover:text-white
-                  focus:bg-organization focus:text-white
-                "
-              >
-                <div className="w-6 h-6 shrink-0">
+          <SidebarMenuItem key={item.name}>
+            <SidebarMenuButton
+              asChild
+              size="lg"
+              isActive={isActive(item.url)}
+              className="
+                rounded-none px-5
+                bg-white text-gray-900
+                hover:bg-red-600 hover:text-white
+                data-[active=true]:bg-gray-900 data-[active=true]:text-white
+              "
+              onClick={handleItemClick}
+            >
+              <Link href={item.url} className="h-15 flex items-center justify-start gap-2">
+                <div className={`w-6 shrink-0 ${state === "collapsed" && !isMobile ? "m-2" : "m-0"}`}>
                   <item.icon />
                 </div>
-                <span className="text-xl font-medium">{item.name}</span>
+                <span className="text-xl font-medium text-inherit">{item.name}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -90,11 +105,9 @@ export default function DashboardSidebar(
       </SidebarMenu>
     </SidebarContent>
     <SidebarFooter className="">
-      <SidebarMenu>
-        <SidebarMenuItem>
+
           <DropdownAccountSwitcher />
-        </SidebarMenuItem>
-      </SidebarMenu>
+
     </SidebarFooter>
   </Sidebar>
   )
