@@ -86,11 +86,15 @@ export default function SignupForm() {
               </Alert>
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="organization">Organization name *</Label>
+            <div className="mb-4">
+              <Label 
+              htmlFor="organization" 
+              className="mb-1 block text-sm"
+              >Organization name *</Label>
               <Input
                 id="organization"
                 type="text"
+                className="w-full rounded border px-3 py-2"
                 autoComplete="organization"
                 value={form.organization}
                 onChange={(e) => update("organization", e.target.value)}
@@ -100,10 +104,14 @@ export default function SignupForm() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstname">First name *</Label>
+              <div className="mb-4">
+                <Label 
+                htmlFor="firstname"
+                className="mb-1 block text-sm"
+                >First name *</Label>
                 <Input
                   id="firstname"
+                  className="w-full rounded border px-3 py-2"
                   value={form.firstname}
                   onChange={(e) => update("firstname", e.target.value)}
                   disabled={loading}
@@ -111,10 +119,14 @@ export default function SignupForm() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="lastname">Last name *</Label>
+              <div className="mb-4">
+                <Label 
+                htmlFor="lastname"
+                className="mb-1 block text-sm"
+                >Last name *</Label>
                 <Input
                   id="lastname"
+                  className="w-full rounded border px-3 py-2"
                   value={form.lastname}
                   onChange={(e) => update("lastname", e.target.value)}
                   disabled={loading}
@@ -123,11 +135,15 @@ export default function SignupForm() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email *</Label>
+            <div className="mb-4">
+              <Label 
+              htmlFor="email"
+              className="mb-1 block text-sm"
+              >Email *</Label>
               <Input
                 id="email"
                 type="email"
+                className="w-full rounded border px-3 py-2"
                 autoComplete="email"
                 value={form.email}
                 onChange={(e) => update("email", e.target.value)}
@@ -136,11 +152,15 @@ export default function SignupForm() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password *</Label>
+            <div className="mb-4">
+              <Label 
+              htmlFor="password"
+              className="mb-1 block text-sm"
+              >Password *</Label>
               <Input
                 id="password"
                 type="password"
+                className="w-full rounded border px-3 py-2"
                 autoComplete="new-password"
                 value={form.password}
                 onChange={(e) => update("password", e.target.value)}
@@ -149,7 +169,7 @@ export default function SignupForm() {
               />
             </div>
 
-            <div className="flex items-start gap-2">
+            <div className="flex items-start gap-2 mb-4">
               <Checkbox
                 id="consent"
                 checked={form.consent}

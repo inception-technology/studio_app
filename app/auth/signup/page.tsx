@@ -2,7 +2,6 @@
 import SignupForm from "../signup/form";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import AuthSidebar from "@/components/shared/AuthSidebar";
 
 export default function SignUpPage() {
 
@@ -41,8 +40,8 @@ export default function SignUpPage() {
 
   return (
     <>
-      <section className="flex flex-col w-2/3 h-full right-container-section">
-        <div className="flex items-center justify-center bg-gray-50 p-20 flex-col w-full h-full">
+      <section className="right-container-section">
+        <div className="inner-container">
           <SignupForm />
           <div className="text-center">
             <a
