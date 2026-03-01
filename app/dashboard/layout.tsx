@@ -1,5 +1,5 @@
 "use client";
-import UserSidebar from "@/components/shared/DashboardSidebar";
+import DashboardSidebar from "@/components/shared/DashboardSidebar";
 import { RequireAuth } from "@/components/shared/RequireAuth";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { House, Wallet, Store, ChartBarBig } from "lucide-react";
@@ -28,7 +28,7 @@ const UserLayout = ({children }: { children: React.ReactNode }) => {
         <SidebarProvider
           defaultOpen={true}
           >
-            <UserSidebar
+            <DashboardSidebar
               sidebarItems={sidebarItems}
               organization={organization}
             />

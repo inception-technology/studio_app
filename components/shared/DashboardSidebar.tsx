@@ -28,7 +28,7 @@ const DropdownAccountSwitcher = dynamic(
   { ssr: false }
 );
 
-export default function UserSidebar(
+export default function DashboardSidebar(
   { sidebarItems,
     organization,
   }: {
@@ -65,41 +65,37 @@ export default function UserSidebar(
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarHeader>
-    
-<SidebarContent>
-  <SidebarMenu>
-    {sidebarItems.map((item) => (
-      <SidebarMenuItem key={item.name} className="w-full flex items-center gap-5">
-        <SidebarMenuButton asChild  className=" rounded-none px-5">
-          <Link
-            href={item.url}
-            className="
-              h-15 flex items-center gap-2
-              transition-colors
-              hover:bg-gray-800 hover:text-white
-              focus:bg-organization focus:text-white
-            "
-          >
-            <item.icon />
-            <span className="text-xl font-medium">{item.name}</span>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-    ))}
-  </SidebarMenu>
-</SidebarContent>
-
-
+    <SidebarContent>
+      <SidebarMenu>
+        {sidebarItems.map((item) => (
+          <SidebarMenuItem key={item.name} className="flex items-center gap-5">
+            <SidebarMenuButton asChild size="lg" className="rounded-none px-5">
+              <Link
+                href={item.url}
+                className="
+                  h-15 flex items-center gap-2
+                  transition-colors
+                  hover:bg-gray-800 hover:text-white
+                  focus:bg-organization focus:text-white
+                "
+              >
+                <div className="w-6 h-6 shrink-0">
+                  <item.icon />
+                </div>
+                <span className="text-xl font-medium">{item.name}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        ))}
+      </SidebarMenu>
+    </SidebarContent>
     <SidebarFooter className="">
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton asChild>
-            <DropdownAccountSwitcher />
-          </SidebarMenuButton>
+          <DropdownAccountSwitcher />
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarFooter>
-
   </Sidebar>
   )
 }
