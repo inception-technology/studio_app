@@ -1,15 +1,128 @@
 /* components.css */
 
-/* AuthLayout page */
+/* =========================
+   AuthLayout page
+   ========================= */
+.main {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+}
+
 .left-container-section {
-    align-items: center;
-    padding: 2rem;
+  display: flex;
+  align-items: center;
+  padding: 2rem;
+  background-color: #111827; /* bg-gray-900 */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+              0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
 }
+
+/* Right container base */
 .right-container-section {
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-direction: row; /* mobile default */
+  align-items: center;
+  justify-content: center;
 }
-.left-sidebar-footer {
-    position:absolute;
-    bottom:10px;
+
+/* Login page inner container */
+.inner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  min-width: 250px;
+  height: 100%;
+  background-color: #f9fafb; /* bg-gray-50 */
+}
+
+/* =========================
+   AuthSidebar component
+   ========================= */
+.logo-link {
+  width: 30%;
+  display: flex;
+  justify-content: center;
+}
+
+.logo-img {
+  width: 7.5rem; /* 120px */
+  height: auto;
+}
+
+.content-container {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: 0;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-top: 1.5rem;
+}
+
+.subtitle {
+  color: #9ca3af;
+  margin-top: 0.75rem;
+}
+
+/* =========================
+   Responsive
+   ========================= */
+
+/* ≥ 768px (md) */
+@media (min-width: 768px) {
+  .main {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .left-container-section {
+    flex-direction: column;
+    width: 33.333333%;
+    height: 100%;
+  }
+
+  .right-container-section {
+    flex-direction: column;
+    width: 66.666667%;
+    height: 100%;
+  }
+
+  .logo-link {
+    width: 100%;
+    align-items: center;
+    padding-top: 5rem; /* pt-20 */
+  }
+
+  .content-container {
+    align-items: center;
+  }
+
+  .title {
+    font-size: 2.25rem; /* text-4xl */
+    text-align: center;
+  }
+
+  .subtitle {
+    margin-top: 1rem; /* mt-4 */
+    text-align: center;
+  }
+}
+
+/* < 768px */
+@media (max-width: 767.98px) {
+  .left-container-section,
+  .right-container-section {
+    width: 100%;
+    padding: 1rem;
+  }
 }

@@ -40,8 +40,8 @@ export default function LoginPage() {
 
   return (
     <>
-      <section className="flex flex-col w-2/3 h-full right-container-section">
-        <div className="flex items-center justify-center bg-gray-50 p-20 flex-col w-full h-full">
+      <section className="right-container-section">
+        <div className="inner-container">
           <form onSubmit={handleSubmit} className="w-full max-w-md rounded-lg border p-8 shadow bg-white">
             <h1 className="mb-6 text-2xl font-semibold">Login</h1>
 
