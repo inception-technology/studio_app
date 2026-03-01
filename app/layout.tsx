@@ -30,7 +30,8 @@ export default function RootLayout({
           text-gray-900 
           max-w-screen 
           h-screen 
-          flex flex-col`
+          flex flex-col
+          bg-[#f8f6f6]`
         }>
         <AuthProvider>
           {children}

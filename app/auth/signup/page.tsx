@@ -2,6 +2,7 @@
 import SignupForm from "../signup/form";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function SignUpPage() {
 
@@ -44,12 +45,12 @@ export default function SignUpPage() {
         <div className="inner-container">
           <SignupForm />
           <div className="text-center">
-            <a
+            <Link
               href={loginLink}
-          className="text-sm text-gray-500 hover:underline font-bold"
-        >
-          Already have an account? Login
-          </a>
+              className="text-sm text-gray-500 hover:underline font-bold"
+            >
+              Already have an account? Login
+            </Link>
         </div>
       </div>
       </section>

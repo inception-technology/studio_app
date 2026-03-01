@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem, DropdownMenu } from "../ui/dropdown-menu";
@@ -70,7 +71,7 @@ export default function UserSidebar(
     {sidebarItems.map((item) => (
       <SidebarMenuItem key={item.name} className="w-full flex items-center gap-5">
         <SidebarMenuButton asChild  className=" rounded-none px-5">
-          <a
+          <Link
             href={item.url}
             className="
               h-15 flex items-center gap-2
@@ -81,7 +82,7 @@ export default function UserSidebar(
           >
             <item.icon />
             <span className="text-xl font-medium">{item.name}</span>
-          </a>
+          </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
     ))}

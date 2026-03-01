@@ -17,10 +17,12 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSidebar } from "@/components/ui/sidebar";
 
 export default function DropdownAccountSwitcher() {
 
   const { profile } = useAuth();
+  const { state } = useSidebar();
   const router = useRouter();
   // Handle logout functionality
   const handleLogout = async () => {
@@ -40,16 +42,18 @@ export default function DropdownAccountSwitcher() {
         className="rounded-full flex gap-2 hover:bg-transparent focus:bg-transparent transition-colors cursor-pointer"
         >
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="shadcn" />
-            <AvatarFallback>LR</AvatarFallback>
+            <AvatarImage src={profile?.avatar_url ?? undefined} alt="avatar" />
+            <AvatarFallback className="bg-gray-200 text-gray-700 font-semibold">
+              {profile?.firstname?.[0]?.toUpperCase()}{profile?.lastname?.[0]?.toUpperCase()}
+            </AvatarFallback>
           </Avatar>
-          <div className="font-bold transition-colors">
-            {
-              profile && `${profile.firstname.charAt(0).toUpperCase() 
-              + profile.firstname.slice(1)} ${profile.lastname.charAt(0).toUpperCase() 
-              + profile.lastname.slice(1)}`
-            }
+          {state === "expanded" && (
+            <div className="font-bold transition-colors px-2 hidden md:inline-flex text-gray-900">
+              {profile && `${profile.firstname.charAt(0).toUpperCase()
+                + profile.firstname.slice(1)} ${profile.lastname.charAt(0).toUpperCase()
+                + profile.lastname.slice(1)}`}
             </div>
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-full md:w-48">

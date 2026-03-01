@@ -2,6 +2,7 @@
 "use client";
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -93,9 +94,9 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-4 text-center">
-            <a href={signupLink} className="text-sm text-gray-500 hover:underline font-bold">
+            <Link href={signupLink} className="text-sm text-gray-500 hover:underline font-bold">
               Don&apos;t have an account? Sign Up
-            </a>
+            </Link>
           </div>
         </div>
       </section>

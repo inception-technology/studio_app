@@ -14,6 +14,7 @@ export type UserProfile = {
   firstname: string;
   lastname: string;
   surname: string
+  avatar_url?: string;
   address_line1: string;
   address_line2: string;
   zipcode: string;
