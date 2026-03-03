@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -14,14 +14,20 @@ type SignupPayload = {
   firstname: string;
   lastname: string;
   email: string;
-  organization: string;
   password: string;
   consent: boolean;
+  organization_name?: string;
 };
 
 type SignupFormProps = {
-  language: string;
-  profile?: string;
+  language_code: string;
+  profile_id: number;
+};
+
+const PROFILE_LABELS: Record<number, string> = {
+  1: "Organization owner",
+  2: "Studio staff",
+  3: "Member & family",
 };
 
 const LANGUAGE_LABELS: Record<string, string> = {
@@ -30,20 +36,30 @@ const LANGUAGE_LABELS: Record<string, string> = {
   cn: "中文",
 };
 
-export default function SignupForm({ language, profile }: SignupFormProps) {
+export default function SignupForm({ language_code, profile_id }: SignupFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [form, setForm] = React.useState<SignupPayload>({
     firstname: "",
     lastname: "",
     email: "",
-    organization: "",
     password: "",
     consent: false,
+    organization_name: "",
   });
 
   const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+  const [errors, setErrors] = React.useState<string[]>([]);
+  const verificationError =
+    searchParams.get("verification") === "error"
+      ? searchParams.get("message") || "Email verification failed."
+      : null;
+  const displayedErrors = errors.length > 0
+    ? errors
+    : verificationError
+      ? [verificationError]
+      : [];
 
   function update<K extends keyof SignupPayload>(key: K, value: SignupPayload[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -51,15 +67,53 @@ export default function SignupForm({ language, profile }: SignupFormProps) {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
+    setErrors([]);
 
+    const validationErrors: string[] = [];
+    const normalizedEmail = form.email.trim();
+
+    // Basic validation
+    if (!form.firstname || !form.lastname || !normalizedEmail || !form.password) {
+      validationErrors.push("Please fill in all required fields.");
+    }
+    // Simple email regex for basic validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (normalizedEmail && !emailRegex.test(normalizedEmail)) {
+      validationErrors.push("Please enter a valid email address.");
+    }
+    // Password strength checks aligned with backend
+    if (form.password) {
+      if (form.password.length < 10) {
+        validationErrors.push("Password must be at least 10 characters long.");
+      }
+      if (!/[A-Z]/.test(form.password)) {
+        validationErrors.push("Password must contain at least one uppercase letter.");
+      }
+      if (!/[a-z]/.test(form.password)) {
+        validationErrors.push("Password must contain at least one lowercase letter.");
+      }
+      if (!/\d/.test(form.password)) {
+        validationErrors.push("Password must contain at least one digit.");
+      }
+      if (!/[^A-Za-z0-9]/.test(form.password)) {
+        validationErrors.push("Password must contain at least one special character.");
+      }
+    }
+    // Consent check
     if (!form.consent) {
-      setError("You must accept data collection to continue.");
+      validationErrors.push("You must accept data collection to continue.");
+    }
+    // If profile is organization, organization_name is required
+    if (profile_id === 1 && !form.organization_name) {
+      validationErrors.push("Organization name is required.");
+    }
+
+    if (validationErrors.length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
     setLoading(true);
-    console.log("Submitting signup form", form);
     try {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
@@ -67,19 +121,32 @@ export default function SignupForm({ language, profile }: SignupFormProps) {
         credentials: "include",
         body: JSON.stringify({
           ...form,
-          language,
-          profile: profile ?? "organization",
+          language_code,
+          profile_id: profile_id,
         }),
       });
-
+      
       if (!res.ok) {
-        const text = await res.text().catch(() => "");
-        throw new Error(text || "Signup failed");
+        const payload = await res.json().catch(() => null);
+        console.error("Signup error response:", payload);
+        const backendErrors: string[] = [];
+        if (typeof payload?.message === "string" && payload.message.trim()) {
+          backendErrors.push(payload.message);
+        }
+        if (typeof payload?.details === "string" && payload.details.trim()) {
+          backendErrors.push(payload.details);
+        }
+        setErrors(backendErrors.length > 0 ? backendErrors : ["Signup failed. Please try again."]);
+        return;
       }
 
-      router.replace("/auth/login");
+      const query = new URLSearchParams({
+        verified: "1",
+        message: "Please check your email to validate account",
+      });
+      router.replace(`/auth/login?${query.toString()}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Signup failed");
+      setErrors([err instanceof Error ? err.message : "Signup failed"]);
     } finally {
       setLoading(false);
     }
@@ -96,6 +163,7 @@ export default function SignupForm({ language, profile }: SignupFormProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           onSubmit={onSubmit}
+          noValidate
           className="flex flex-col h-full"
         >
           <motion.div
@@ -106,20 +174,26 @@ export default function SignupForm({ language, profile }: SignupFormProps) {
           >
             <h2 className="text-3xl font-bold text-gray-900">Create an account</h2>
             <p className="text-gray-600 mt-2">
-              {`Language: ${LANGUAGE_LABELS[language] ?? language} • Profile: ${profile ?? "organization"}`}
+              {`Language: ${LANGUAGE_LABELS[language_code] ?? language_code} • Profile: ${PROFILE_LABELS[profile_id] ?? profile_id}`}
             </p>
-            {profile==="member" && (
+            {profile_id === 3 && (
               <p className="text-gray-600 mt-2 font-bold">Please provide the legal guardian&apos;s information if the member is a minor.</p>
             )}
           </motion.div>
 
           <div className="space-y-4 flex-1">
-            {error && (
+            {displayedErrors.length > 0 && (
               <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {displayedErrors.map((message, index) => (
+                      <li key={`${message}-${index}`}>{message}</li>
+                    ))}
+                  </ul>
+                </AlertDescription>
               </Alert>
             )}
-            {profile === "organization" && (
+            {profile_id === 1 && (
             <div className="space-y-2">
               <Label 
               htmlFor="organization" 
@@ -130,10 +204,9 @@ export default function SignupForm({ language, profile }: SignupFormProps) {
                 type="text"
                 className="w-full flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-organization/50"
                 autoComplete="organization"
-                value={form.organization}
-                onChange={(e) => update("organization", e.target.value)}
+                value={form.organization_name || ""}
+                onChange={(e) => update("organization_name", e.target.value)}
                 disabled={loading}
-                required
               />
             </div>
             )}
@@ -149,7 +222,6 @@ export default function SignupForm({ language, profile }: SignupFormProps) {
                   value={form.firstname}
                   onChange={(e) => update("firstname", e.target.value)}
                   disabled={loading}
-                  required
                 />
               </div>
 
@@ -164,7 +236,6 @@ export default function SignupForm({ language, profile }: SignupFormProps) {
                 value={form.lastname}
                   onChange={(e) => update("lastname", e.target.value)}
                   disabled={loading}
-                  required
                 />
               </div>
             </div>
@@ -182,7 +253,6 @@ export default function SignupForm({ language, profile }: SignupFormProps) {
                 value={form.email}
                 onChange={(e) => update("email", e.target.value)}
                 disabled={loading}
-                required
               />
             </div>
 
@@ -199,8 +269,10 @@ export default function SignupForm({ language, profile }: SignupFormProps) {
                 value={form.password}
                 onChange={(e) => update("password", e.target.value)}
                 disabled={loading}
-                required
               />
+              <p className="text-xs text-gray-500">
+                Must be at least 10 characters and include uppercase, lowercase, a digit, and a special character.
+              </p>
             </div>
 
             <div className="flex flex-row mt-4 text-sm text-gray-600 space-x-2">

@@ -1,6 +1,6 @@
 // app/api/auth/login/route.ts
 import { NextResponse } from "next/server";
-import { createSession, newSessionId, setCookie, getSession, SessionData, cookieName, TTL } from "@/lib/session";
+import { createSession, newSessionId, getSession, SessionData, cookieName, TTL } from "@/lib/session";
 
 type LoginRequest = {
     username: string;
@@ -26,6 +26,14 @@ export async function POST(req: Request): Promise<NextResponse> {
         { message: "Missing INTERNAL_API_URL" }, 
         { status: 500 }
     );
+    const oauthClientId = process.env.INTERNAL_OAUTH_CLIENT_ID;
+    const oauthClientSecret = process.env.INTERNAL_OAUTH_CLIENT_SECRET;
+    if (!oauthClientId || !oauthClientSecret) {
+        return NextResponse.json(
+            { message: "Missing OAuth client configuration" },
+            { status: 500 }
+        );
+    }
     try {
         // 1) BFF -> FastAPI (server-to-server)
         const r = await fetch(`${apiBase}/auth/login`, {
@@ -35,8 +43,8 @@ export async function POST(req: Request): Promise<NextResponse> {
             grant_type: "password",
             username,
             password,
-            client_id: process.env.INTERNAL_OAUTH_CLIENT_ID ?? "",
-            client_secret: process.env.INTERNAL_OAUTH_CLIENT_SECRET ?? "",
+            client_id: oauthClientId,
+            client_secret: oauthClientSecret,
         }),
             cache: "no-store",
         });

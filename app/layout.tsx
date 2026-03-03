@@ -27,9 +27,10 @@ export default function RootLayout({
         className={
           `${quicksand.variable}
           antialiased 
-          text-gray-900 
-          max-w-screen 
-          h-screen 
+          text-gray-900
+          w-full
+          min-h-100dvh
+          h-full
           flex flex-col
           bg-[#f8f6f6]`
         }>

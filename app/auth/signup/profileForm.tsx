@@ -1,12 +1,12 @@
 "use client";
-import { color, motion } from "motion/react";
+import { motion } from "motion/react";
 import { useState } from 'react';
 import { ArrowRight, Brain, BuildingIcon, Check, GroupIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const PROFILES = [
     {
-        id: "organization",
+        id: 1,
         title: "Organization owner",
         description: "Headquarters, Leagues, Clubs, and Dojangs.",
         icon: BuildingIcon,
@@ -16,7 +16,7 @@ const PROFILES = [
         color: "organization",
     },
     {
-        id: "staff",
+        id: 2,
         title: "Studio staff",
         description: "Coach, assistant, and administrative staff.",
         icon: Brain,
@@ -26,7 +26,7 @@ const PROFILES = [
         color: "staff",
     },
     {
-        id: "member",
+        id: 3,
         title: "Member & Family",
         description: "Members and family accounts.",
         icon: GroupIcon,
@@ -37,8 +37,8 @@ const PROFILES = [
     },
 ] as const;
 
-export default function ProfileForm({ onContinue }: { onContinue?: (profileId: string) => void }) {
-    const [selectedProfile, setSelectedProfile] = useState<string>("organization");
+export default function ProfileForm({ onContinue }: { onContinue?: (profileId: number) => void }) {
+    const [selectedProfile, setSelectedProfile] = useState<number>(1);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
@@ -47,7 +47,7 @@ export default function ProfileForm({ onContinue }: { onContinue?: (profileId: s
         setLoading(true);
 
         try {
-        window.localStorage.setItem("profile", selectedProfile);
+            window.localStorage.setItem("profile_id", selectedProfile.toString());
         } catch {}
 
         if (onContinue) {

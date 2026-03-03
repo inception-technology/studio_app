@@ -3,11 +3,13 @@ import AuthSidebar from "@/components/shared/AuthSidebar";
 
 const AuthLayout = ({children }: { children: React.ReactNode }) => {
   return (
-    <main className="main">
+    <main className="main h-full w-full flex flex-row">
       <section className="left-container-section">
         <AuthSidebar />
       </section>
-      {children}
+      <section className="right-container-section">
+        {children}
+      </section>
     </main>
   );
 }

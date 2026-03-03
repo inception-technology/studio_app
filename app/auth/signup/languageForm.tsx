@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useRouter } from "next/navigation";
 
 interface Language {
-  id: string;
+  code: string;
   name_us: string;
   nativeName: string;
   flagUrl: string;
@@ -14,26 +14,26 @@ interface Language {
 
 const LANGUAGES: Language[] = [
   {
-    id: 'en',
+    code: 'en',
     name_us: 'English',
     nativeName: 'English',
     flagUrl: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&q=80&w=100&h=100',
   },
   {
-    id: 'fr',
+    code: 'fr',
     name_us: 'French',
     nativeName: 'Français',
     flagUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=100&h=100',
   },
   {
-    id: 'cn',
+    code: 'cn',
     name_us: 'Chinese',
     nativeName: '中文',
     flagUrl: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?auto=format&fit=crop&q=80&w=100&h=100',
   },
 ];
 
-export default function LanguageForm({ onContinue }: { onContinue?: (langId: string) => void }) {
+export default function LanguageForm({ onContinue }: { onContinue?: (langCode: string) => void }) {
   const [selectedLang, setSelectedLang] = useState<string>('en');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -84,13 +84,13 @@ export default function LanguageForm({ onContinue }: { onContinue?: (langId: str
           <div className="space-y-4 flex-1">
             {LANGUAGES.map((lang, index) => (
               <motion.button
-                key={lang.id}
+                key={lang.code}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + index * 0.1 }}
-                onClick={() => setSelectedLang(lang.id)}
+                onClick={() => setSelectedLang(lang.code)}
                 className={`w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-300 ${
-                  selectedLang === lang.id 
+                  selectedLang === lang.code 
                     ? 'border-organization bg-organization/5 shadow-sm' 
                     : 'border-gray-100 bg-white hover:border-organization/20'
                 }`}
@@ -107,7 +107,7 @@ export default function LanguageForm({ onContinue }: { onContinue?: (langId: str
                     />
                   </div>
                   <div className="text-left">
-                    <p className={`font-semibold ${selectedLang === lang.id ? 'text-gray-900' : 'text-gray-700'}`}>
+                    <p className={`font-semibold ${selectedLang === lang.code ? 'text-gray-900' : 'text-gray-700'}`}>
                       {lang.name_us}
                     </p>
                     <p className="text-xs text-gray-400 font-medium">
@@ -117,11 +117,11 @@ export default function LanguageForm({ onContinue }: { onContinue?: (langId: str
                 </div>
                 
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  selectedLang === lang.id 
+                  selectedLang === lang.code 
                     ? 'bg-organization scale-110' 
                     : 'border-2 border-gray-200'
                 }`}>
-                  {selectedLang === lang.id && <Check className="w-4 h-4 text-white" />}
+                  {selectedLang === lang.code && <Check className="w-4 h-4 text-white" />}
                 </div>
               </motion.button>
             ))}

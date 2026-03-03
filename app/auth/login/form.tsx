@@ -1,10 +1,11 @@
 "use client";
 import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from 'motion/react';
 import { Eye, EyeOff, Check, ArrowRight, Globe } from 'lucide-react';
 import Image from 'next/image';
 import { useAuth } from "@/contexts/AuthContext";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface Language {
   id: string;
@@ -39,11 +40,16 @@ export default function LoginForm() {
     const [openLang, setOpenLang] = useState(false);
     const { login } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState<string | null>(null);
+    const [errors, setErrors] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const verificationMessage =
+        searchParams.get("verified") === "1"
+            ? searchParams.get("message") || "Email verified successfully."
+            : null;
 
     const loginWithContext = useCallback(async (email: string, password: string): Promise<boolean> => {
     return login(email, password);
@@ -51,17 +57,30 @@ export default function LoginForm() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setError(null);
+        setErrors([]);
+
+        const validationErrors: string[] = [];
+        if (!username.trim()) {
+            validationErrors.push("Email is required.");
+        }
+        if (!password) {
+            validationErrors.push("Password is required.");
+        }
+        if (validationErrors.length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
+
         setLoading(true);
         try {
         const ok = await loginWithContext(username, password);
         if (!ok) {
-            setError("Invalid email or password");
+            setErrors(["Invalid email or password"]);
             return;
         }
         router.replace("/dashboard");
         } catch (error) {
-            setError(error instanceof Error ? error.message : "Login failed");
+            setErrors([error instanceof Error ? error.message : "Login failed"]);
         } finally {
             setLoading(false);
         }
@@ -69,7 +88,6 @@ export default function LoginForm() {
 
     return (
     <>
-
         {/* Decorative Background Blurs */}
         <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
@@ -131,8 +149,19 @@ export default function LoginForm() {
                 className="space-y-4"
                 onSubmit={handleSubmit}
             >
-            {error && (
-                <p className="mb-4 rounded bg-red-100 p-2 text-sm text-red-600">{error}</p>
+            {verificationMessage && (
+                <p className="mb-4 rounded bg-emerald-100 p-2 text-sm text-emerald-700">{verificationMessage}</p>
+            )}
+            {errors.length > 0 && (
+                <Alert variant="destructive" className="mb-4">
+                    <AlertDescription>
+                        <ul className="list-disc pl-5 space-y-1">
+                            {errors.map((message, index) => (
+                                <li key={`${message}-${index}`}>{message}</li>
+                            ))}
+                        </ul>
+                    </AlertDescription>
+                </Alert>
             )}
 
             <div className="mb-4">
