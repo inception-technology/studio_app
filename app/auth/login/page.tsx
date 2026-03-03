@@ -3,8 +3,11 @@ import { Suspense } from "react";
 import Link from "next/link";
 import LoginForm from "./form";
 import AuthSuspenseFallback from "@/components/shared/AuthSuspenseFallback";
+import { getTranslations } from "next-intl/server";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+
+  const t = await getTranslations("Login");
 
   const signupLink = "/auth/signup";
 
@@ -18,7 +21,7 @@ export default function LoginPage() {
           <Link 
             href={signupLink} 
             className="text-sm text-gray-500 hover:underline font-bold"
-          >Don&apos;t have an account? Sign Up
+          >{t("dontHaveAccount")}
           </Link>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { Check, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 
 interface Language {
   code: string;
@@ -34,17 +35,20 @@ const LANGUAGES: Language[] = [
 ];
 
 export default function LanguageForm({ onContinue }: { onContinue?: (langCode: string) => void }) {
-  const [selectedLang, setSelectedLang] = useState<string>('en');
+  const t = useTranslations("LanguageForm");
+  const locale = useLocale();
+  const [selectedLang, setSelectedLang] = useState<string>(locale);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    // Optionnel: persister la langue pour la suite
+    // Persist locale selection for next-intl + local flow
     try {
-      window.localStorage.setItem("lang", selectedLang);
+      window.localStorage.setItem("language_code", selectedLang);
     } catch {}
+    document.cookie = `NEXT_LOCALE=${selectedLang}; Path=/; Max-Age=31536000; SameSite=Lax`;
     if (onContinue) {
       onContinue(selectedLang);
       return; // le parent va swap le composant
@@ -70,8 +74,8 @@ export default function LanguageForm({ onContinue }: { onContinue?: (langCode: s
             transition={{ delay: 0.1 }}
             className="mb-8"
           >
-            <h2 className="text-3xl font-bold text-gray-900">Welcome</h2>
-            <p className="text-gray-600 mt-2">Please select your language to start.</p>
+            <h2 className="text-3xl font-bold text-gray-900">{t("title")}</h2>
+            <p className="text-gray-600 mt-2">{t("subtitle")}</p>
           </motion.div>
 
           {/* Language List */}
@@ -111,10 +115,10 @@ export default function LanguageForm({ onContinue }: { onContinue?: (langCode: s
                   </div>
                   <div className="text-left">
                     <p className={`font-semibold ${selectedLang === lang.code ? 'text-gray-900' : 'text-gray-700'}`}>
-                      {lang.name_us}
+                      {t(`languages.${lang.code}.name`) }
                     </p>
                     <p className="text-xs text-gray-400 font-medium">
-                      {lang.nativeName}
+                      {t(`languages.${lang.code}.native`) }
                     </p>
                   </div>
                 </div>
@@ -161,7 +165,7 @@ export default function LanguageForm({ onContinue }: { onContinue?: (langCode: s
                 disabled:cursor-not-allowed 
                 disabled:opacity-50
                 ">
-                <span className="text-lg">{loading ? "...setting language" : "Next"}</span>
+                <span className="text-lg">{loading ? t("submitting") : t("submit")}</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </motion.button>
           </motion.div>

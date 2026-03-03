@@ -1,0 +1,97 @@
+{
+	"Common": {
+		"loading": "加载中..."
+	},
+	"Login": {
+		"title": "登录",
+		"email": "邮箱",
+		"password": "密码",
+		"submit": "登录",
+		"submitting": "登录中...",
+		"verifiedDefault": "邮箱验证成功。",
+		"emailRequired": "邮箱为必填项。",
+		"passwordRequired": "密码为必填项。",
+		"invalidCredentials": "邮箱或密码无效",
+		"loginFailed": "登录失败",
+		"dontHaveAccount": "还没有账号？立即注册"
+	},
+	"Signup": {
+		"title": "创建账号",
+		"languageProfile": "语言：{language} • 资料：{profile}",
+		"minorHint": "如果成员是未成年人，请提供其监护人信息。",
+		"verificationFailed": "邮箱验证失败。",
+		"fillRequired": "请填写所有必填项。",
+		"emailInvalid": "请输入有效的邮箱地址。",
+		"passwordMin": "密码长度至少为10个字符。",
+		"passwordUpper": "密码必须包含至少一个大写字母。",
+		"passwordLower": "密码必须包含至少一个小写字母。",
+		"passwordDigit": "密码必须包含至少一个数字。",
+		"passwordSpecial": "密码必须包含至少一个特殊字符。",
+		"consentRequired": "你必须同意数据收集后才能继续。",
+		"organizationRequired": "组织名称为必填项。",
+		"signupFailed": "注册失败",
+		"signupFailedTryAgain": "注册失败，请重试。",
+		"checkEmailToValidate": "请检查邮箱并完成账户验证",
+		"organizationName": "组织名称",
+		"firstName": "名",
+		"lastName": "姓",
+		"email": "邮箱",
+		"password": "密码",
+		"passwordHint": "密码至少10位，并包含大写字母、小写字母、数字和特殊字符。",
+		"consentPrefix": "点击“注册”即表示我同意",
+		"termsPrivacy": "服务条款与隐私政策",
+		"submit": "注册",
+		"submitting": "正在创建账号...",
+		"back": "返回",
+		"alreadyHaveAccount": "已有账号？去登录",
+		"languages": {
+			"english": "英语",
+			"french": "法语",
+			"chinese": "中文"
+		},
+		"profiles": {
+			"organizationOwner": "组织管理员",
+			"studioStaff": "场馆工作人员",
+			"memberFamily": "会员与家庭"
+		}
+	},
+	"ProfileForm": {
+		"title": "选择你的身份",
+		"subtitle": "请选择你的身份类型以继续。",
+		"submit": "下一步",
+		"submitting": "...正在设置身份",
+		"profiles": {
+			"organizationOwnerTitle": "组织管理员",
+			"organizationOwnerDescription": "总部、联盟、俱乐部和道馆。",
+			"studioStaffTitle": "场馆工作人员",
+			"studioStaffDescription": "教练、助教与行政人员。",
+			"memberFamilyTitle": "会员与家庭",
+			"memberFamilyDescription": "会员及家庭账号。"
+		}
+	},
+	"AuthSidebar": {
+		"logoAlt": "Dojang Studio 标志",
+		"title": "DOJANG STUDIO",
+		"subtitle": "管理你的跆拳道场馆。"
+	},
+	"LanguageForm": {
+		"title": "欢迎",
+		"subtitle": "请选择你的语言以开始。",
+		"submit": "下一步",
+		"submitting": "...正在设置语言",
+		"languages": {
+			"en": {
+				"name": "英语",
+				"native": "English"
+			},
+			"fr": {
+				"name": "法语",
+				"native": "Français"
+			},
+			"cn": {
+				"name": "中文",
+				"native": "中文"
+			}
+		}
+	}
+}

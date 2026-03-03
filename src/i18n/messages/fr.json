@@ -1,0 +1,97 @@
+{
+	"Common": {
+		"loading": "Chargement..."
+	},
+	"Login": {
+		"title": "Connexion",
+		"email": "E-mail",
+		"password": "Mot de passe",
+		"submit": "Connexion",
+		"submitting": "Connexion en cours...",
+		"verifiedDefault": "E-mail vérifié avec succès.",
+		"emailRequired": "L'e-mail est obligatoire.",
+		"passwordRequired": "Le mot de passe est obligatoire.",
+		"invalidCredentials": "E-mail ou mot de passe invalide",
+		"loginFailed": "Échec de la connexion",
+		"dontHaveAccount": "Vous n'avez pas de compte ? Inscrivez-vous"
+	},
+	"Signup": {
+		"title": "Créer un compte",
+		"languageProfile": "Langue : {language} • Profil : {profile}",
+		"minorHint": "Veuillez renseigner les informations du représentant légal si le membre est mineur.",
+		"verificationFailed": "La vérification de l'e-mail a échoué.",
+		"fillRequired": "Veuillez remplir tous les champs obligatoires.",
+		"emailInvalid": "Veuillez saisir une adresse e-mail valide.",
+		"passwordMin": "Le mot de passe doit contenir au moins 10 caractères.",
+		"passwordUpper": "Le mot de passe doit contenir au moins une lettre majuscule.",
+		"passwordLower": "Le mot de passe doit contenir au moins une lettre minuscule.",
+		"passwordDigit": "Le mot de passe doit contenir au moins un chiffre.",
+		"passwordSpecial": "Le mot de passe doit contenir au moins un caractère spécial.",
+		"consentRequired": "Vous devez accepter la collecte des données pour continuer.",
+		"organizationRequired": "Le nom de l'organisation est obligatoire.",
+		"signupFailed": "Échec de l'inscription",
+		"signupFailedTryAgain": "Échec de l'inscription. Veuillez réessayer.",
+		"checkEmailToValidate": "Veuillez vérifier votre e-mail pour valider votre compte",
+		"organizationName": "Nom de l'organisation",
+		"firstName": "Prénom",
+		"lastName": "Nom",
+		"email": "E-mail",
+		"password": "Mot de passe",
+		"passwordHint": "Doit contenir au moins 10 caractères avec une majuscule, une minuscule, un chiffre et un caractère spécial.",
+		"consentPrefix": "En cliquant sur S'inscrire, j'accepte les",
+		"termsPrivacy": "Conditions et politique de confidentialité",
+		"submit": "S'inscrire",
+		"submitting": "Création du compte...",
+		"back": "Retour",
+		"alreadyHaveAccount": "Vous avez déjà un compte ? Connexion",
+		"languages": {
+			"english": "Anglais",
+			"french": "Français",
+			"chinese": "Chinois"
+		},
+		"profiles": {
+			"organizationOwner": "Responsable d'organisation",
+			"studioStaff": "Équipe du studio",
+			"memberFamily": "Membre & famille"
+		}
+	},
+	"ProfileForm": {
+		"title": "Choisissez votre profil",
+		"subtitle": "Veuillez sélectionner votre type de profil pour continuer.",
+		"submit": "Suivant",
+		"submitting": "...configuration du profil",
+		"profiles": {
+			"organizationOwnerTitle": "Responsable d'organisation",
+			"organizationOwnerDescription": "Sièges, ligues, clubs et dojangs.",
+			"studioStaffTitle": "Équipe du studio",
+			"studioStaffDescription": "Coach, assistant et personnel administratif.",
+			"memberFamilyTitle": "Membre & famille",
+			"memberFamilyDescription": "Comptes membres et famille."
+		}
+	},
+	"AuthSidebar": {
+		"logoAlt": "Logo Dojang Studio",
+		"title": "DOJANG STUDIO",
+		"subtitle": "Gérez vos studios de Taekwondo."
+	},
+	"LanguageForm": {
+		"title": "Bienvenue",
+		"subtitle": "Veuillez sélectionner votre langue pour commencer.",
+		"submit": "Suivant",
+		"submitting": "...configuration de la langue",
+		"languages": {
+			"en": {
+				"name": "Anglais",
+				"native": "English"
+			},
+			"fr": {
+				"name": "Français",
+				"native": "Français"
+			},
+			"cn": {
+				"name": "Chinois",
+				"native": "中文"
+			}
+		}
+	}
+}

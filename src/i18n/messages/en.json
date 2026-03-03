@@ -1,0 +1,97 @@
+{
+	"Common": {
+		"loading": "Loading..."
+	},
+	"Login": {
+		"title": "Login",
+		"email": "Email",
+		"password": "Password",
+		"submit": "Login",
+		"submitting": "Logging in...",
+		"verifiedDefault": "Email verified successfully.",
+		"emailRequired": "Email is required.",
+		"passwordRequired": "Password is required.",
+		"invalidCredentials": "Invalid email or password",
+		"loginFailed": "Login failed",
+		"dontHaveAccount": "Don't have an account? Sign Up"
+	},
+	"Signup": {
+		"title": "Create an account",
+		"languageProfile": "Language: {language} • Profile: {profile}",
+		"minorHint": "Please provide the legal guardian's information if the member is a minor.",
+		"verificationFailed": "Email verification failed.",
+		"fillRequired": "Please fill in all required fields.",
+		"emailInvalid": "Please enter a valid email address.",
+		"passwordMin": "Password must be at least 10 characters long.",
+		"passwordUpper": "Password must contain at least one uppercase letter.",
+		"passwordLower": "Password must contain at least one lowercase letter.",
+		"passwordDigit": "Password must contain at least one digit.",
+		"passwordSpecial": "Password must contain at least one special character.",
+		"consentRequired": "You must accept data collection to continue.",
+		"organizationRequired": "Organization name is required.",
+		"signupFailed": "Signup failed",
+		"signupFailedTryAgain": "Signup failed. Please try again.",
+		"checkEmailToValidate": "Please check your email to validate account",
+		"organizationName": "Organization name",
+		"firstName": "First name",
+		"lastName": "Last name",
+		"email": "Email",
+		"password": "Password",
+		"passwordHint": "Must be at least 10 characters and include uppercase, lowercase, a digit, and a special character.",
+		"consentPrefix": "By clicking Sign Up I agree to the",
+		"termsPrivacy": "Terms and Privacy Policy",
+		"submit": "Sign Up",
+		"submitting": "Creating account...",
+		"back": "Back",
+		"alreadyHaveAccount": "Already have an account? Login",
+		"languages": {
+			"english": "English",
+			"french": "French",
+			"chinese": "Chinese"
+		},
+		"profiles": {
+			"organizationOwner": "Organization owner",
+			"studioStaff": "Studio staff",
+			"memberFamily": "Member & family"
+		}
+	},
+	"ProfileForm": {
+		"title": "Choose your profile",
+		"subtitle": "Please select your profile type to continue.",
+		"submit": "Next",
+		"submitting": "...setting profile",
+		"profiles": {
+			"organizationOwnerTitle": "Organization owner",
+			"organizationOwnerDescription": "Headquarters, Leagues, Clubs, and Dojangs.",
+			"studioStaffTitle": "Studio staff",
+			"studioStaffDescription": "Coach, assistant, and administrative staff.",
+			"memberFamilyTitle": "Member & Family",
+			"memberFamilyDescription": "Members and family accounts."
+		}
+	},
+	"AuthSidebar": {
+		"logoAlt": "Dojang Studio logo",
+		"title": "DOJANG STUDIO",
+		"subtitle": "Manage your Taekwondo studios."
+	},
+	"LanguageForm": {
+		"title": "Welcome",
+		"subtitle": "Please select your language to start.",
+		"submit": "Next",
+		"submitting": "...setting language",
+		"languages": {
+			"en": {
+				"name": "English",
+				"native": "English"
+			},
+			"fr": {
+				"name": "French",
+				"native": "Français"
+			},
+			"cn": {
+				"name": "Chinese",
+				"native": "中文"
+			}
+		}
+	}
+}

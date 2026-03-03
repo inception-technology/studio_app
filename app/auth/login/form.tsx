@@ -1,11 +1,12 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from 'motion/react';
 import { Eye, EyeOff, Check, ArrowRight, Globe } from 'lucide-react';
 import Image from 'next/image';
 import { useAuth } from "@/contexts/AuthContext";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useLocale, useTranslations } from "next-intl";
 
 interface Language {
   id: string;
@@ -36,7 +37,9 @@ const LANGUAGES: Language[] = [
 ];
 
 export default function LoginForm() {
-    const [selectedLang, setSelectedLang] = useState<string>('en');
+    const t = useTranslations("Login");
+    const locale = useLocale();
+    const [selectedLang, setSelectedLang] = useState<string>(locale);
     const [openLang, setOpenLang] = useState(false);
     const { login } = useAuth();
     const router = useRouter();
@@ -48,8 +51,24 @@ export default function LoginForm() {
     const [showPassword, setShowPassword] = useState(false);
     const verificationMessage =
         searchParams.get("verified") === "1"
-            ? searchParams.get("message") || "Email verified successfully."
+            ? searchParams.get("message") || t("verifiedDefault")
             : null;
+
+    useEffect(() => {
+        setSelectedLang(locale);
+    }, [locale]);
+
+    const applyLocale = useCallback((nextLocale: string) => {
+        try {
+            window.localStorage.setItem("language_code", nextLocale);
+        } catch {
+            // no-op
+        }
+        document.cookie = `NEXT_LOCALE=${nextLocale}; Path=/; Max-Age=31536000; SameSite=Lax`;
+        setSelectedLang(nextLocale);
+        setOpenLang(false);
+        router.refresh();
+    }, [router]);
 
     const loginWithContext = useCallback(async (email: string, password: string): Promise<boolean> => {
     return login(email, password);
@@ -61,10 +80,10 @@ export default function LoginForm() {
 
         const validationErrors: string[] = [];
         if (!username.trim()) {
-            validationErrors.push("Email is required.");
+            validationErrors.push(t("emailRequired"));
         }
         if (!password) {
-            validationErrors.push("Password is required.");
+            validationErrors.push(t("passwordRequired"));
         }
         if (validationErrors.length > 0) {
             setErrors(validationErrors);
@@ -75,12 +94,12 @@ export default function LoginForm() {
         try {
         const ok = await loginWithContext(username, password);
         if (!ok) {
-            setErrors(["Invalid email or password"]);
+            setErrors([t("invalidCredentials")]);
             return;
         }
         router.replace("/dashboard");
         } catch (error) {
-            setErrors([error instanceof Error ? error.message : "Login failed"]);
+            setErrors([error instanceof Error ? error.message : t("loginFailed")]);
         } finally {
             setLoading(false);
         }
@@ -96,7 +115,7 @@ export default function LoginForm() {
                 transition={{ delay: 0.1 }}
                 className="mb-8 flex items-center justify-between"
             >
-            <h2 className="text-3xl font-bold text-gray-900">Login</h2>
+            <h2 className="text-3xl font-bold text-gray-900">{t("title")}</h2>
 
             <div className="relative">
             <button
@@ -112,8 +131,7 @@ export default function LoginForm() {
                     <button
                     key={lang.id}
                     onClick={() => {
-                        setSelectedLang(lang.id);
-                        setOpenLang(false);
+                        applyLocale(lang.id);
                     }}
                     className={`w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-gray-100 transition ${
                         selectedLang === lang.id ? "bg-gray-50 font-medium" : ""
@@ -161,7 +179,7 @@ export default function LoginForm() {
             )}
 
             <div className="mb-4">
-                <label className="font-semibold text-gray-700">Email</label>
+                <label className="font-semibold text-gray-700">{t("email")}</label>
                 <input
                 className="w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-organization/50"
                 value={username}
@@ -170,7 +188,7 @@ export default function LoginForm() {
                 />
             </div>
             <div className="mb-6">
-                <label className="font-semibold text-gray-700">Password</label>
+                <label className="font-semibold text-gray-700">{t("password")}</label>
                 <div className="relative">
                 <input
                     type={showPassword ? "text" : "password"}
@@ -225,7 +243,7 @@ export default function LoginForm() {
                     disabled:cursor-not-allowed 
                     disabled:opacity-50
                     ">
-                    <span className="text-lg">{loading ? "Logging in..." : "Login"}</span>
+                    <span className="text-lg">{loading ? t("submitting") : t("submit")}</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </motion.button>
             </motion.div>

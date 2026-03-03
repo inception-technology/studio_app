@@ -3,13 +3,13 @@ import { motion } from "motion/react";
 import { useState } from 'react';
 import { ArrowRight, Brain, BuildingIcon, Check, GroupIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { is } from "date-fns/locale";
+import { useTranslations } from "next-intl";
 
 const PROFILES = [
     {
         id: 1,
-        title: "Organization owner",
-        description: "Headquarters, Leagues, Clubs, and Dojangs.",
+        titleKey: "organizationOwnerTitle",
+        descriptionKey: "organizationOwnerDescription",
         icon: BuildingIcon,
         buttonClass: "border-organization bg-organization/5 shadow-sm",
         //buttonClass: "bg-organization/10 text-organization hover:bg-organization/20 shadow-lg shadow-organization/25",
@@ -20,8 +20,8 @@ const PROFILES = [
     },
     {
         id: 2,
-        title: "Studio staff",
-        description: "Coach, assistant, and administrative staff.",
+        titleKey: "studioStaffTitle",
+        descriptionKey: "studioStaffDescription",
         icon: Brain,
         buttonClass: "border-staff bg-staff/5 shadow-sm",
         //buttonClass: "bg-staff/10 text-staff hover:bg-staff/20 shadow-lg shadow-staff/25",
@@ -32,8 +32,8 @@ const PROFILES = [
     },
     {
         id: 3,
-        title: "Member & Family",
-        description: "Members and family accounts.",
+        titleKey: "memberFamilyTitle",
+        descriptionKey: "memberFamilyDescription",
         icon: GroupIcon,
         buttonClass: "border-member bg-member/5 shadow-sm",
         //buttonClass: "bg-member/10 text-member hover:bg-member/20 shadow-lg shadow-member/25",
@@ -45,6 +45,7 @@ const PROFILES = [
 ] as const;
 
 export default function ProfileForm({ onContinue }: { onContinue?: (profileId: number) => void }) {
+    const t = useTranslations("ProfileForm");
     const [selectedProfile, setSelectedProfile] = useState<number>(1);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
@@ -81,8 +82,8 @@ export default function ProfileForm({ onContinue }: { onContinue?: (profileId: n
                 transition={{ delay: 0.1 }}
                 className="mb-8"
             >
-                <h2 className="text-3xl font-bold text-gray-900">Choose your profile</h2>
-                    <p className="text-gray-600 mt-2">Please select your profile type to continue.</p>
+                <h2 className="text-3xl font-bold text-gray-900">{t("title")}</h2>
+                    <p className="text-gray-600 mt-2">{t("subtitle")}</p>
             </motion.div>
 
             <div className="space-y-4">
@@ -106,8 +107,8 @@ export default function ProfileForm({ onContinue }: { onContinue?: (profileId: n
                                     <Icon className={profile.iconClass} size={28} />
                                 </div>
                                 <div className="flex-1">
-                                    <h3 className="font-bold text-lg text-gray-900 leading-tight">{profile.title}</h3>
-                                    <p className="text-xs text-gray-500 mt-1">{profile.description}</p>
+                                    <h3 className="font-bold text-lg text-gray-900 leading-tight">{t(`profiles.${profile.titleKey}`)}</h3>
+                                    <p className="text-xs text-gray-500 mt-1">{t(`profiles.${profile.descriptionKey}`)}</p>
                                 </div>
                                   </div>
                                   <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 
@@ -151,7 +152,7 @@ export default function ProfileForm({ onContinue }: { onContinue?: (profileId: n
                       disabled:opacity-50
                       "
                   >
-                      <span className="text-lg">{loading ? "...setting profile" : "Next"}</span>
+                      <span className="text-lg">{loading ? t("submitting") : t("submit")}</span>
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </motion.button>
                 </motion.div>

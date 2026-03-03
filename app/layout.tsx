@@ -2,6 +2,8 @@
 import type { Metadata } from "next";
 import { Quicksand } from "next/font/google";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
 import"@/styles/components.css";
 
@@ -16,13 +18,16 @@ export const metadata: Metadata = {
   description: "Manage your Dojang studio with ease.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body
         className={
           `${quicksand.variable}
@@ -34,9 +39,11 @@ export default function RootLayout({
           flex flex-col
           bg-[#f8f6f6]`
         }>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );
