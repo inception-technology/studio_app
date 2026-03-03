@@ -34,15 +34,10 @@ type RawSession = {
 };
 
 function normalizeSession(input: SessionData | RawSession): SessionData {
-  return (input as any).data ? (input as SessionData) : { data: input as RawSession };
-}
-
-function computeTtlSeconds(expiresAt: number) {
-  const now = Math.floor(Date.now() / 1000);
-  // expires_at est parfois float -> on floor
-  const ttl = Math.floor(expiresAt) - now;
-  // évite ttl <= 0 qui fait expirer instantanément / erreur selon client
-  return Math.max(30, ttl); // au moins 30s
+  if ("data" in input) {
+    return input;
+  }
+  return { data: input };
 }
 
 export function newSessionId() {

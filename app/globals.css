@@ -46,8 +46,8 @@
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
   --color-organization: var(--color-org);
+  --color-staff: var(--color-stf);
   --color-member: var(--color-mmb);
-  --color-student: var(--color-std);
 }
 
 :root {
@@ -84,8 +84,9 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --color-org: oklch(0.526 0.216 29.5);
+  --color-stf: oklch(83.685% 0.16435 84.431);
   --color-mmb: oklch(0.395 0.193 270.4);
-  --color-std: oklch(0.835 0.186 24.7);
+
 }
 
 .dark {

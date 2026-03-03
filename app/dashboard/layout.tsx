@@ -2,7 +2,7 @@
 import DashboardSidebar from "@/components/shared/DashboardSidebar";
 import { RequireAuth } from "@/components/shared/RequireAuth";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { House, Wallet, Store, ChartBarBig } from "lucide-react";
+import { House, Wallet, Store, ChartBarBig, Building } from "lucide-react";
 import "../globals.css";
 import "@/styles/components.css"
 
@@ -20,6 +20,7 @@ const UserLayout = ({children }: { children: React.ReactNode }) => {
         { name: "Members", url: "/dashboard/studios/members" },
       ] },
     { name: "Finances", url: "/dashboard/finances", icon: Wallet, subItems: [] },
+    { name: "Organization", url: "/dashboard/organization", icon: Building, subItems: [] },
   ];
 
   return (

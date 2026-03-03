@@ -36,7 +36,7 @@ export async function GET(): Promise<NextResponse> {
     );
     try {
         // 1) BFF -> FastAPI (server-to-server)
-        const r = await fetch(`${apiBase}/users/me`, {
+        const r = await fetch(`${apiBase}/auth/me`, {
         method: "POST",
         headers: { 
             "Content-Type": "application/x-www-form-urlencoded",
@@ -45,16 +45,17 @@ export async function GET(): Promise<NextResponse> {
             cache: "no-store",
         });
         // 1b) handle auth errors
-        if (!r.status || r.status === 401) {
+        if (!r.ok) {
             const t = await r.text().catch(() => "");
             return NextResponse.json(
-                { message: "Error retrieving users", details: t }, 
+                { message: "Error retrieving user profile", details: t }, 
                 { status: r.status }
             );
         }
         // 1c) read users info from FastAPI response
         const response = await r.json();
-        if (!response || !response.me) {
+        const profile = response?.me ?? response;
+        if (!profile || typeof profile !== "object") {
             return NextResponse.json(
                 { message: "Invalid response from API" }, 
                 { status: 500 }
@@ -62,7 +63,7 @@ export async function GET(): Promise<NextResponse> {
         }
         // 2) respond to client
         return NextResponse.json(
-            { ...response.me }, 
+            { ...profile }, 
             { status: 200 }
         ); 
     } catch (error) {

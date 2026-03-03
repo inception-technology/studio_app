@@ -1,41 +1,30 @@
 "use client";
-import SignupForm from "../signup/form";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import LanguageForm from "./languageForm";
+import SignupForm from "./signupForm";
+import ProfileForm from "./profileForm";
 import Link from "next/link";
 
 export default function SignUpPage() {
-
-  const loginLink = "/auth/login";
-  const router = useRouter();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-    // Appel FastAPI login route
+  const [step, setStep] = useState<"language" | "profile" | "signup">("language");
+  const [lang, setLang] = useState<string>(() => {
+    if (typeof window === "undefined") return "en";
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password }),
-        }
-      );
-      // Si erreur
-      if (!res.ok) throw new Error();
-      // Redirige vers login après signup réussi
-      router.push(loginLink);
+      return window.localStorage.getItem("lang") || "en";
     } catch {
-      setError("Signup failed");
-    } finally {
-      setLoading(false);
+      return "en";
+    }
+  });
+  const [profile, setProfile] = useState<string>("organization");
+  const loginLink = "/auth/login";
+
+  const handleBack = () => {
+    if (step === "signup") {
+      setStep("profile");
+      return;
+    }
+    if (step === "profile") {
+      setStep("language");
     }
   };
 
@@ -43,16 +32,43 @@ export default function SignUpPage() {
     <>
       <section className="right-container-section">
         <div className="inner-container">
-          <SignupForm />
-          <div className="text-center">
+          {step === "language" ? (
+            <LanguageForm
+              onContinue={(selected) => {
+                setLang(selected);
+                setStep("profile");
+              }}
+            />
+          ) : step === "profile" ? (
+            <ProfileForm
+              onContinue={(selected) => {
+                setProfile(selected);
+                setStep("signup");
+              }}
+            />
+          ) : (
+            <SignupForm language={lang} profile={profile} />
+          )}
+          {step !== "language" && (
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={handleBack}
+                className="text-sm text-gray-500 hover:underline font-bold cursor-pointer"
+              >
+                Back
+              </button>
+            </div>
+          )}
+          <div className="mt-4 py-4 text-center">
             <Link
               href={loginLink}
               className="text-sm text-gray-500 hover:underline font-bold"
             >
               Already have an account? Login
             </Link>
+          </div>
         </div>
-      </div>
       </section>
     </>
   );
