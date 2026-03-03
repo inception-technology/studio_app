@@ -45,9 +45,9 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
-  --color-organization: var(--color-org);
-  --color-staff: var(--color-stf);
-  --color-member: var(--color-mmb);
+  --color-organization: var(--color-organization);
+  --color-staff: var(--color-staff);
+  --color-member: var(--color-member);
 }
 
 :root {
@@ -83,9 +83,9 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --color-org: oklch(0.526 0.216 29.5);
-  --color-stf: oklch(83.685% 0.16435 84.431);
-  --color-mmb: oklch(0.395 0.193 270.4);
+  --color-organization: oklch(0.526 0.216 29.5);
+  --color-staff: oklch(83.685% 0.16435 84.431);
+  --color-member: oklch(0.395 0.193 270.4);
 
 }
 
@@ -121,6 +121,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --color-organization: oklch(0.526 0.216 29.5);
+  --color-staff: oklch(83.685% 0.16435 84.431);
+  --color-member: oklch(0.395 0.193 270.4);
 }
 
 @layer base {

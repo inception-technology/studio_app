@@ -55,12 +55,7 @@ export default function LanguageForm({ onContinue }: { onContinue?: (langCode: s
 
   return (
     <>
-        
-        {/* Decorative Background Blurs */}
-        <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex-1 flex flex-col px-8 pt-16 pb-12 relative z-10">
+        <div className="flex flex-col p-5 relative z-10 mb-5">
         <motion.form
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -68,7 +63,6 @@ export default function LanguageForm({ onContinue }: { onContinue?: (langCode: s
             onSubmit={handleSubmit}
             className="flex flex-col h-full"
         >
-
           {/* Welcome Header */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
@@ -81,7 +75,7 @@ export default function LanguageForm({ onContinue }: { onContinue?: (langCode: s
           </motion.div>
 
           {/* Language List */}
-          <div className="space-y-4 flex-1">
+          <div className="space-y-4">
             {LANGUAGES.map((lang, index) => (
               <motion.button
                 key={lang.code}
@@ -89,8 +83,17 @@ export default function LanguageForm({ onContinue }: { onContinue?: (langCode: s
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + index * 0.1 }}
                 onClick={() => setSelectedLang(lang.code)}
-                className={`w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-300 ${
-                  selectedLang === lang.code 
+                className={`
+                  w-full 
+                  flex 
+                  items-center 
+                  justify-between 
+                  p-4 
+                  rounded-2xl 
+                  border-2 
+                  transition-all 
+                  duration-300 
+                  ${selectedLang === lang.code 
                     ? 'border-organization bg-organization/5 shadow-sm' 
                     : 'border-gray-100 bg-white hover:border-organization/20'
                 }`}

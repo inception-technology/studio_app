@@ -55,23 +55,18 @@ export default function SignUpPage() {
           </Suspense>
         )}
         {step !== "language" && (
-          <div className="mt-4 text-center">
             <button
               type="button"
               onClick={handleBack}
               className="text-sm text-gray-500 hover:underline font-bold cursor-pointer"
-            >
-              Back
+            >Back
             </button>
-          </div>
         )}
-        <div className="mt-4 py-4 text-center">
           <Link
             href={loginLink}
-            className="text-sm text-gray-500 hover:underline font-bold"
+            className="text-sm text-gray-500 hover:underline text-center p-5"
           >Already have an account? Login
           </Link>
-        </div>
       </div>
     </>
   );

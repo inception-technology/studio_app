@@ -154,10 +154,7 @@ export default function SignupForm({ language_code, profile_id }: SignupFormProp
 
   return (
     <>
-      <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="flex-1 flex flex-col px-8 pt-16 pb-12 relative z-10">
+      <div className="flex flex-col relative z-10 mb-5">
         <motion.form
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -181,7 +178,7 @@ export default function SignupForm({ language_code, profile_id }: SignupFormProp
             )}
           </motion.div>
 
-          <div className="space-y-4 flex-1">
+          <div className="space-y-4">
             {displayedErrors.length > 0 && (
               <Alert variant="destructive">
                 <AlertDescription>

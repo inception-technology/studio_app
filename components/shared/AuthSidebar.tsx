@@ -10,7 +10,7 @@ export default function AuthSidebar() {
       </Link>
       <div className="content-container">
         <h1 className="title">DOJANG STUDIO</h1>
-        <p className="subtitle">Manage your Taekwondo studios with ease.</p>
+        <p className="subtitle">Manage your Taekwondo studios.</p>
       </div>
     </>
   );

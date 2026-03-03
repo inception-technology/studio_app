@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { useState } from 'react';
 import { ArrowRight, Brain, BuildingIcon, Check, GroupIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { is } from "date-fns/locale";
 
 const PROFILES = [
     {
@@ -10,7 +11,9 @@ const PROFILES = [
         title: "Organization owner",
         description: "Headquarters, Leagues, Clubs, and Dojangs.",
         icon: BuildingIcon,
-        buttonClass: "bg-organization/10 text-organization hover:bg-organization/20 shadow-lg shadow-organization/25",
+        buttonClass: "border-organization bg-organization/5 shadow-sm",
+        //buttonClass: "bg-organization/10 text-organization hover:bg-organization/20 shadow-lg shadow-organization/25",
+        isSelected: "bg-organization scale-110",
         iconWrapClass: "bg-organization/10",
         iconClass: "text-organization",
         color: "organization",
@@ -20,7 +23,9 @@ const PROFILES = [
         title: "Studio staff",
         description: "Coach, assistant, and administrative staff.",
         icon: Brain,
-        buttonClass: "bg-staff/10 text-staff hover:bg-staff/20 shadow-lg shadow-staff/25",
+        buttonClass: "border-staff bg-staff/5 shadow-sm",
+        //buttonClass: "bg-staff/10 text-staff hover:bg-staff/20 shadow-lg shadow-staff/25",
+        isSelected: "bg-staff scale-110",
         iconWrapClass: "bg-staff/10",
         iconClass: "text-staff",
         color: "staff",
@@ -30,7 +35,9 @@ const PROFILES = [
         title: "Member & Family",
         description: "Members and family accounts.",
         icon: GroupIcon,
-        buttonClass: "bg-member/10 text-member hover:bg-member/20 shadow-lg shadow-member/25",
+        buttonClass: "border-member bg-member/5 shadow-sm",
+        //buttonClass: "bg-member/10 text-member hover:bg-member/20 shadow-lg shadow-member/25",
+        isSelected: "bg-member scale-110",
         iconWrapClass: "bg-member/10",
         iconClass: "text-member",
         color: "member",
@@ -60,11 +67,7 @@ export default function ProfileForm({ onContinue }: { onContinue?: (profileId: n
 
     return (
     <>
-        {/* Decorative Background Blurs */}
-        <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex-1 flex flex-col px-8 pt-16 pb-12 relative z-10">
+        <div className="flex flex-col p-5 relative z-10 mb-5">
         <motion.form
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -82,7 +85,7 @@ export default function ProfileForm({ onContinue }: { onContinue?: (profileId: n
                     <p className="text-gray-600 mt-2">Please select your profile type to continue.</p>
             </motion.div>
 
-            <div className="space-y-4 flex-1">
+            <div className="space-y-4">
                 {PROFILES.map((profile, index) => {
                     const Icon = profile.icon;
                         const isSelected = selectedProfile === profile.id;
@@ -90,14 +93,13 @@ export default function ProfileForm({ onContinue }: { onContinue?: (profileId: n
                             <motion.button
                             key={profile.id}
                                 type="button"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 + index * 0.1 }}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 + index * 0.1 }}
                                 onClick={() => setSelectedProfile(profile.id)}
-                                className={`w-full p-5 rounded-2xl border-2 transition-all duration-300 text-left ${
-                                  isSelected ? `border-${profile.color} bg-${profile.color}/5 shadow-sm` : `border-gray-100 bg-white hover:border-${profile.color}/20`
-                                }`}
-                        >
+                                className={`w-full p-2 rounded-2xl border-2 transition-all duration-300 text-left 
+                                    ${isSelected ? `${profile.buttonClass}` : `border-gray-100 bg-white`}`} 
+                                >
                                 <div className="flex items-center justify-between mb-5">
                                   <div className="flex items-center">
                                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mr-4 ${profile.iconWrapClass}`}>
@@ -108,10 +110,9 @@ export default function ProfileForm({ onContinue }: { onContinue?: (profileId: n
                                     <p className="text-xs text-gray-500 mt-1">{profile.description}</p>
                                 </div>
                                   </div>
-                                  <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 ${
-                                    isSelected ? `bg-${profile.color} scale-110` : "border-2 border-gray-200"
-                                  }`}>
-                                    {isSelected && <Check className="w-4 h-4 text-white" />}
+                                  <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 
+                                  ${isSelected ? `${profile.isSelected}` : "border-2 border-gray-200"}`}
+                                  >{isSelected && <Check className="w-4 h-4 text-white" />}
                                   </div>
                             </div>
                             </motion.button>

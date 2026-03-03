@@ -15,23 +15,16 @@ import {
   CreditCardIcon,
   LogOutIcon,
 } from "lucide-react"
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSidebar } from "@/components/ui/sidebar";
 
 export default function DropdownAccountSwitcher() {
 
-  const { profile } = useAuth();
+  const { profile, logout } = useAuth();
   const { state } = useSidebar();
-  const router = useRouter();
   // Handle logout functionality
   const handleLogout = async () => {
-    await fetch("/api/auth/logout", {
-      method: "POST",
-      cache: "no-store",
-      credentials: "include",
-    }).catch(() => {});
-    router.replace("/");
+    await logout();
   };
 
   return (
