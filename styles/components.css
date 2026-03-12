@@ -75,6 +75,47 @@
 }
 
 /* =========================
+   Common
+   ========================= */
+.ios-blur {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+.safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* =========================
+   DashboardPage
+   ========================= */
+.health-gauge {
+    background: conic-gradient(from 180deg, #ec1313 0%, #fbbf24 50%, #10b981 100%);
+    mask: radial-gradient(transparent 58%, white 60%);
+    -webkit-mask: radial-gradient(transparent 58%, white 60%);
+}
+
+/* =========================
+   StudiosPage
+   ========================= */
+.ai-gradient {
+    background: linear-gradient(135deg, #ec1313 0%, #ff4b4b 100%);
+}
+
+/* =========================
+   AssistantPage
+   ========================= */
+.chat-bubble-ai {
+    border-bottom-left-radius: 4px;
+}
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* =========================
    Responsive
    ========================= */
 

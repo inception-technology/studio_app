@@ -25,7 +25,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/colla
 import { DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem, DropdownMenu } from "../ui/dropdown-menu";
 import DropdownAccountSwitcher from "./DropdownAccountSwitcher";
 
-export default function DashboardSidebar(
+export default function AppSidebar(
   { sidebarItems,
     organization,
   }: {

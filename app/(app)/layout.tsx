@@ -1,22 +1,22 @@
 "use client";
-import DashboardSidebar from "@/components/shared/DashboardSidebar";
-import { RequireAuth } from "@/components/shared/RequireAuth";
+import AppSidebar from "@/components/shared/AppSidebar";
+import { AuthRequire } from "@/components/shared/AuthRequire";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
-import { House, Wallet, Store, ChartBarBig, Building } from "lucide-react";
+import { House, Wallet, LayoutDashboard, ChartBarBig, Building } from "lucide-react";
 import "@/app/globals.css";
 import "@/styles/components.css"
 
 const sidebarItems = [
-  { name: "Dashboard", url: "/dashboard", icon: House, subItems: [] },
-  // { name: "Reports", url: "/dashboard/reports", icon: ChartBarBig, subItems: [] },
-  // { name: "Studios", url: "/dashboard/studios", icon: Store, subItems: [] },
-  // { name: "Finances", url: "/dashboard/finances", icon: Wallet, subItems: [] },
-  // { name: "Organization", url: "/dashboard/organization", icon: Building, subItems: [] },
+  { name: "Dashboard", url: "/dashboard", icon: LayoutDashboard, subItems: [] },
+  { name: "Studios", url: "/studios", icon: House, subItems: [] },
+  { name: "Reports", url: "/reports", icon: ChartBarBig, subItems: [] },
+  { name: "Finance", url: "/finance", icon: Wallet, subItems: [] },
+  { name: "Settings", url: "/settings", icon: Building, subItems: [] },
 ];
 
-const DashboardLayout = ({children }: { children: React.ReactNode }) => {
+const AppLayout = ({children }: { children: React.ReactNode }) => {
   const { userCred } = useAuth();
 
   const shouldShowConfigMessage =
@@ -26,11 +26,11 @@ const DashboardLayout = ({children }: { children: React.ReactNode }) => {
 
   return (
     <main className="flex h-full w-full bg-[#f8f6f6]">
-      <RequireAuth>
+      <AuthRequire>
         <SidebarProvider
           defaultOpen={true}
           >
-            <DashboardSidebar
+            <AppSidebar
               sidebarItems={sidebarItems}
               organization={organization}
             />
@@ -46,8 +46,8 @@ const DashboardLayout = ({children }: { children: React.ReactNode }) => {
               {children}
             </div>
         </SidebarProvider>
-      </RequireAuth>
+      </AuthRequire>
     </main>
   );
 }
-export default DashboardLayout;
+export default AppLayout;
