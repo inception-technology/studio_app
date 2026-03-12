@@ -20,7 +20,7 @@ import { useSidebar } from "@/components/ui/sidebar";
 
 export default function DropdownAccountSwitcher() {
 
-  const { profile, logout } = useAuth();
+  const { userProfile, logout } = useAuth();
   const { state } = useSidebar();
   // Handle logout functionality
   const handleLogout = async () => {
@@ -35,16 +35,16 @@ export default function DropdownAccountSwitcher() {
         className="rounded-full flex gap-2 hover:bg-transparent focus:bg-transparent transition-colors cursor-pointer"
         >
           <Avatar>
-            <AvatarImage src={profile?.avatar_url ?? undefined} alt="avatar" />
+            <AvatarImage src={userProfile?.avatar_url ?? undefined} alt="avatar" />
             <AvatarFallback className="bg-gray-200 text-gray-700 font-semibold">
-              {profile?.firstname?.[0]?.toUpperCase()}{profile?.lastname?.[0]?.toUpperCase()}
+              {userProfile?.firstname?.[0]?.toUpperCase()}{userProfile?.lastname?.[0]?.toUpperCase()}
             </AvatarFallback>
           </Avatar>
           {state === "expanded" && (
             <div className="font-bold transition-colors px-2 hidden md:inline-flex text-gray-900">
-              {profile && `${profile.firstname.charAt(0).toUpperCase()
-                + profile.firstname.slice(1)} ${profile.lastname.charAt(0).toUpperCase()
-                + profile.lastname.slice(1)}`}
+              {userProfile && `${userProfile.firstname.charAt(0).toUpperCase()
+                + userProfile.firstname.slice(1)} ${userProfile.lastname.charAt(0).toUpperCase()
+                + userProfile.lastname.slice(1)}`}
             </div>
           )}
         </Button>

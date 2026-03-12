@@ -9,7 +9,7 @@ function isSupportedLocale(value: string): value is (typeof locales)[number] {
 export default getRequestConfig(async ({locale}) => {
   const cookieStore = await cookies();
   const cookieLocale = cookieStore.get('NEXT_LOCALE')?.value;
-  const requestedLocale = locale ?? cookieLocale;
+  const requestedLocale = cookieLocale ?? locale;
   const safeLocale = requestedLocale && isSupportedLocale(requestedLocale) ? requestedLocale : defaultLocale;
 
   return {

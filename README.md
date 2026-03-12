@@ -1,36 +1,171 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Studio App
 
-## Getting Started
+Application web Next.js (App Router) avec BFF intégré pour l'authentification et le proxy vers une API interne (`INTERNAL_API_URL`).
 
-First, run the development server:
+## Stack Technique
+
+- Runtime: `Node.js`
+- Framework: `Next.js 16` (`app/` router)
+- Langage: `TypeScript`
+- UI: composants custom + `shadcn` + `radix-ui` + `lucide-react`
+- i18n: `next-intl`
+- Session store:
+- `in-memory` en local par defaut
+- `Upstash Redis` en mode partagé (optionnel)
+
+## Architecture
+
+Le frontend n'appelle pas directement le backend metier. Il passe par les routes Next.js sous `app/api/**`.
+
+Flux global:
+
+1. Client React -> `/api/*` (BFF Next.js)
+2. BFF -> API interne (`INTERNAL_API_URL`) avec bearer token
+3. BFF gere la session serveur + cookie `httpOnly`
+4. Le token est rafraichi automatiquement si proche expiration
+
+### Dossiers Principaux
+
+- `app/`: pages App Router et routes API
+- `app/api/`: endpoints BFF (auth, members, organization, studio, studios)
+- `contexts/AuthContext.tsx`: etat d'auth cote client
+- `lib/session.ts`: gestion session/cookie
+- `lib/authorized-session.ts`: guard d'autorisation partagee
+- `lib/session-refresh.ts`: refresh token partage
+- `.route-template.ts`: template technique pour nouvelles routes BFF
+
+## Authentification Et Session
+
+### Cote serveur
+
+- Session ID stocke en cookie `httpOnly` (`SESSION_COOKIE_NAME`, defaut: `session_id`)
+- Session data stockee:
+- en memoire si `USE_REDIS_SESSIONS !== "true"`
+- dans Redis si `USE_REDIS_SESSIONS === "true"`
+
+Type de session (simplifie):
+
+```ts
+type SessionData = {
+	data: {
+		access_token: string;
+		refresh_token: string;
+		expires_at: number;
+		user: {
+			id_user: number;
+			id_profile: number;
+			id_organization: number | null;
+			id_studio: number | null;
+			code_language: string | "en";
+		};
+	};
+};
+```
+
+### Helpers partages
+
+- `getAuthorizedSession()`
+- lit le cookie de session
+- recharge la session
+- valide le contrat minimal utilisateur
+
+- `ensureSessionFresh(session)`
+- rafraichit le token si expiration proche
+
+- `refreshSessionTokens(session)`
+- execute `/refresh`
+- met a jour session + cookie
+- invalide session/cookie si refresh impossible
+
+## Routes API BFF
+
+Routes actuellement exposees:
+
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/auth/me`
+- `POST /api/auth/signup`
+- `POST /api/auth/verify-email`
+- `GET /api/member/all`
+- `GET /api/member/me`
+- `GET /api/organization`
+- `GET /api/studio`
+- `GET /api/studios`
+
+## Variables D'environnement
+
+Configurer un fichier `.env.local` a la racine.
+
+Variables requises:
+
+- `INTERNAL_API_URL`: base URL de l'API backend
+- `INTERNAL_OAUTH_CLIENT_ID`: client ID OAuth pour login/signup
+- `INTERNAL_OAUTH_CLIENT_SECRET`: secret OAuth pour login/signup
+
+Variables session:
+
+- `SESSION_COOKIE_NAME` (optionnel, defaut `session_id`)
+- `SESSION_TTL_SECONDS` (optionnel, defaut `604800`)
+- `USE_REDIS_SESSIONS` (`true` pour activer Redis)
+
+Variables Redis (si `USE_REDIS_SESSIONS=true`):
+
+- `KV_REST_API_URL`
+- `KV_REST_API_TOKEN`
+
+Exemple minimal:
+
+```env
+INTERNAL_API_URL=http://localhost:8000
+INTERNAL_OAUTH_CLIENT_ID=your-client-id
+INTERNAL_OAUTH_CLIENT_SECRET=your-client-secret
+
+SESSION_COOKIE_NAME=session_id
+SESSION_TTL_SECONDS=604800
+USE_REDIS_SESSIONS=false
+```
+
+## Lancement
+
+Installation:
+
+```bash
+npm install
+```
+
+Developpement:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Build production:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build
+npm run start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Lint:
 
-## Learn More
+```bash
+npm run lint
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Conventions Pour Ajouter Une Route
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Utiliser `.route-template.ts` comme base.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Checklist recommandee:
 
-## Deploy on Vercel
+1. Verifier la session avec `getAuthorizedSession()`.
+2. Appeler `ensureSessionFresh(session)` avant l'appel backend.
+3. En cas d'echec backend, tenter `refreshSessionTokens(session)` puis retry.
+4. Ne pas invalider la session sur erreurs non-auth (hors `401`) sans raison.
+5. Retourner des messages d'erreur explicites et un status HTTP coherent.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Points D'attention
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Les routes BFF sont en `cache: "no-store"` pour eviter les artefacts de cache sur les donnees sensibles.
+- Le cookie de session est `httpOnly` et `sameSite=lax`.
+- En production, `secure=true` est applique automatiquement au cookie.

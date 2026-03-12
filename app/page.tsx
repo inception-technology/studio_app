@@ -21,8 +21,10 @@ export default function Page() {
   useEffect(() => {
     if (isLoading) return;
 
-    if (isAuthenticated) router.replace("/dashboard");
-    else router.replace("/auth/login");
+    if (isAuthenticated) {
+      router.replace("/dashboard");
+    }
+    else router.replace("/login");
   }, [isAuthenticated, isLoading, router]);
 
   if (isLoading) {

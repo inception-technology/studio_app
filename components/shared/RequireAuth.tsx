@@ -10,7 +10,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-        router.replace("/auth/login");
+        router.replace("/login");
     }
     }, [isAuthenticated, isLoading, router]);
 

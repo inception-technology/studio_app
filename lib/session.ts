@@ -1,15 +1,20 @@
 // lib/session.ts
 import crypto from "crypto";
 import { redis } from "./redis";
-import { cookies } from "next/headers";
-
-export const COOKIE = process.env.SESSION_COOKIE_NAME || "session_id";
 export const TTL = Number(process.env.SESSION_TTL_SECONDS || 60 * 60 * 24 * 7); 
 const globalStore = global as typeof globalThis & { __sessionStore?: Map<string, SessionData> };
 if (!globalStore.__sessionStore) globalStore.__sessionStore = new Map();
 const store = globalStore.__sessionStore;
 
 // Session management (in-memory or Redis based on config)
+export type UserSessionInfo = {
+  id_user: number;
+  id_profile: number;
+  id_organization: number | null;
+  id_studio: number | null;
+  code_language: string | "en";
+};
+
 
 export type SessionData = {
   data: {
@@ -17,11 +22,7 @@ export type SessionData = {
     token_type: string;
     expires_at: number;
     refresh_token: string;
-    user: {
-      id: number; 
-      id_role: number; 
-      id_organization: number;
-    }
+    user: UserSessionInfo;
   };
 };
 
@@ -30,7 +31,7 @@ type RawSession = {
   token_type: string;
   expires_at: number;
   refresh_token: string;
-  user: { id: number; id_role: number; id_organization: number };
+  user: UserSessionInfo;
 };
 
 function normalizeSession(input: SessionData | RawSession): SessionData {
@@ -49,13 +50,14 @@ export function sessionKey(sid: string) {
 }
 
 // abstraction pour gérer les sessions (en mémoire ou Redis selon config)
-const USE_REDIS = process.env.USE_REDIS_SESSIONS === "true";
+const USE_REDIS = process.env.USE_REDIS_SESSIONS === "true" || !!redis;
 
 export async function createSession(sessionId: string, input: SessionData | RawSession) {
+  // Creates a new session with the given ID and data.
   const data = normalizeSession(input);
-  // Redis store (for production)
-  if (USE_REDIS) {
-    //const ttl = computeTtlSeconds(data.data.expires_at);
+  // Storing session
+  if (USE_REDIS && redis) {
+    // Redis store (for production)
     await redis.set(sessionKey(sessionId), JSON.stringify(data), { ex: TTL });
   } else {
     // in-memory store (for development/testing)
@@ -64,8 +66,9 @@ export async function createSession(sessionId: string, input: SessionData | RawS
 }
 
 export async function getSession(sessionId: string): Promise<SessionData | null> {
-  // Redis store (for production)
-  if (USE_REDIS) {
+  // Retrieves session data by session ID. Returns null if not found or expired.
+  if (USE_REDIS && redis) {
+    // Redis store (for production)
     const v: string | null = await redis.get(sessionKey(sessionId));
     if (!v) {
       return null;
@@ -81,46 +84,9 @@ export async function getSession(sessionId: string): Promise<SessionData | null>
 }
 
 export async function deleteSession(sessionId: string) {
+  // Deletes a session by session ID.
   // Redis store (for production)
-  if (USE_REDIS) return redis.del(sessionKey(sessionId));
+  if (USE_REDIS && redis) return redis.del(sessionKey(sessionId));
   // in-memory store (for development/testing)
   store.delete(sessionId);
-}
-
-
-// Cookie management
-
-export function cookieName() {
-  return COOKIE;
-}
-
-export async function setCookie(sessionId: string, exp_session: number = TTL) {
-    const cookieStore = await cookies();
-    cookieStore.set({
-        name: cookieName(),
-        value: sessionId,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // only send over HTTPS in prod
-        sameSite: "lax",
-        path: "/",
-        maxAge: exp_session,
-        expires: new Date(Date.now() + exp_session * 1000),
-    });
-}
-
-export async function getCookie() {
-    const cookieStore = await cookies();
-    return cookieStore.get(cookieName())?.value || null;
-}
-
-export async function clearCookie() {
-    const cookieStore = await cookies();
-    cookieStore.set(cookieName(), "", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 0,
-        expires: new Date(0),
-    });
 }

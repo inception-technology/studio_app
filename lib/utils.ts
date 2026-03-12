@@ -2,6 +2,12 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
+export type ApiSuccessEnvelope<T> = {
+  ok: true;
+  data: T;
+  meta?: Record<string, unknown>;
+};
+
 // Fonction utilitaire pour parser les réponses JSON de manière sécurisée
 export async function safeJson<T>(res: Response): Promise<T | null> {
   const ct = res.headers.get("content-type") ?? "";
@@ -12,6 +18,24 @@ export async function safeJson<T>(res: Response): Promise<T | null> {
   } catch {
     return null;
   }
+}
+
+// Lit une réponse JSON qui peut être soit brute, soit enveloppée dans { ok, data, meta }.
+export async function safeApiJson<T>(res: Response): Promise<T | null> {
+  const json = await safeJson<unknown>(res);
+  if (!json) return null;
+
+  if (
+    typeof json === "object" &&
+    json !== null &&
+    "ok" in json &&
+    (json as { ok?: unknown }).ok === true &&
+    "data" in json
+  ) {
+    return (json as ApiSuccessEnvelope<T>).data ?? null;
+  }
+
+  return json as T;
 }
 
 // Fonction pour merger les classes CSS de manière conditionnelle

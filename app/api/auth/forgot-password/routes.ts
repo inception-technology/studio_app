@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 import { API_ERROR_CODES } from "@/lib/api-codes";
 import {
     apiError,
@@ -8,83 +8,63 @@ import {
     getInternalAuthHeaders,
     readResponseText,
 } from "@/lib/internal-api";
- 
-type SignupRequest = {
-    firstname: string;
-    lastname: string;
+
+type ForgotPasswordRequest = {
     email: string;
-    password: string;
-    code_language: string;
-    id_profile: number;
-    organization_name?: string;
 };
 
-export async function POST(request: Request): Promise<NextResponse> {
-
-    const body: SignupRequest | null = await request.json().catch(() => null);
-    const firstname = body?.firstname?.trim();
-    const lastname = body?.lastname?.trim();
+export async function POST(request: NextRequest): Promise<NextResponse> {
+    const body: ForgotPasswordRequest | null = await request.json().catch(() => null);
     const email = body?.email?.trim();
-    const password = body?.password;
-    const code_language = body?.code_language?.trim();
-    const id_profile = body?.id_profile;
-    const organization_name = body?.organization_name?.trim();
 
-    // Vérification basique des champs
-    if (!firstname || !lastname || !email || !password || !code_language || !id_profile) {
+    // Vérification basique du champ email
+    if (!email) {
         return apiError(
             400, 
             API_ERROR_CODES.BAD_REQUEST, 
-            "Missing required signup fields"
+            "Missing required email field"
         );
     }
-
+    
     // Récupération de la configuration de l'API interne
     const configResult = getInternalApiConfigOrError();
     if ("error" in configResult) {
         return configResult.error;
     }
     const { apiBase } = configResult.config;
-    const signUpEndpoint = `${apiBase}/auth/signup`;
 
     try {
         // 1) BFF -> FastAPI (server-to-server)
+        const ForgotPasswordEndpoint = `${apiBase}/auth/forgot-password`;
         const backendResponse = await backendProxyFetch({
-            url: signUpEndpoint,
+            url: ForgotPasswordEndpoint,
             method: "PUT",
             getHeaders: () => ({
                 "Content-Type": "application/json",
                 ...getInternalAuthHeaders(configResult.config),
             }),
-            body: JSON.stringify({
-                firstname,
-                lastname,
-                email,
-                password,
-                code_language,
-                id_profile,
-                organization_name
-            }),
+            body: JSON.stringify({"email": email}),
         });
+
         // 1b) handle auth errors
         if (!backendResponse.ok) {
             const details = await readResponseText(backendResponse);
             console.error(
-                "Signup error:", 
+                "Forgot password error:", 
                 backendResponse.status, 
                 details
             );
             if (backendResponse.status === 422) {
                 return apiError(
                     422, 
-                    API_ERROR_CODES.SIGNUP_VALIDATION_FAILED, 
-                    "Invalid signup data", details
+                    API_ERROR_CODES.FORGOT_PASSWORD_FAILED, 
+                    "Invalid forgot password data", details
                 );
             }
             return apiError(
                 backendResponse.status, 
-                API_ERROR_CODES.SIGNUP_FAILED, 
-                "Signup failed", 
+                API_ERROR_CODES.FORGOT_PASSWORD_FAILED, 
+                "Forgot password failed", 
                 details
             );
         }
@@ -97,7 +77,7 @@ export async function POST(request: Request): Promise<NextResponse> {
             { status: backendResponse.status }
         );
     } catch (error) {
-        console.error("Signup error:", error);
+        console.error("Forgot password error:", error);
         return apiError(
             500, 
             API_ERROR_CODES.INTERNAL_ERROR, 
