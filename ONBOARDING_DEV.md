@@ -17,7 +17,7 @@ npm -v
 
 ## 2. Installation
 
-Depuis la racine du projet:
+Depuis le dossier `studio_app`:
 
 ```bash
 npm install
@@ -58,8 +58,8 @@ Application disponible sur `http://localhost:3000`.
 2. Se connecter avec un compte de test.
 3. Verifier l'acces a:
 - `/dashboard`
-- `/dashboard/studios`
-- `/dashboard/organization`
+- `/studios`
+- `/dashboard/config`
 4. Se deconnecter et verifier le retour a la page publique.
 
 ## 6. Architecture rapide a connaitre
@@ -111,7 +111,7 @@ Symptomes:
 
 Actions:
 
-1. Verifier `.env.local`.
+1. Verifier `.env.local` et la presence de `INTERNAL_OAUTH_CLIENT_ID` et `INTERNAL_OAUTH_CLIENT_SECRET`.
 2. Relancer `npm run dev` apres mise a jour.
 
 ### 7.3 Backend interne indisponible
@@ -150,10 +150,7 @@ Si `build` passe mais `dev` casse, verifier les fichiers modifies recemment et l
 
 1. Copier `.route-template.ts` vers `app/api/<feature>/route.ts`.
 2. Adapter `path` backend et messages d'erreur.
-3. Conserver:
-- `getAuthorizedSession()`
-- `ensureSessionFresh()`
-- `refreshSessionTokens()`
+3. Conserver le pattern `proxyToBackend(...)` du template (auth/session/refresh centralises).
 4. Tester le statut HTTP en cas `200`, `401`, `500`.
 
 ## 9. Bonnes pratiques d'equipe

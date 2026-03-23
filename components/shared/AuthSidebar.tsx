@@ -9,7 +9,7 @@ export default async function AuthSidebar() {
   return (
     <>
       <Link href="/" className="logo-link">
-        <Image src="/logo_dojang.png" alt={t("logoAlt")} width={150} height={150} className="logo-img"/>
+        <Image src="/logo_dojang.png" alt={t("logoAlt")} width={150} height={150} className="logo-img" loading="eager"/>
       </Link>
       <div className="content-container">
         <h1 className="title">{t("title")}</h1>

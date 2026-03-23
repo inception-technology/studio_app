@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { Quicksand } from "next/font/google";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { QueryProvider } from "@/components/shared/QueryProvider";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
@@ -40,9 +41,11 @@ export default async function RootLayout({
           bg-[#f8f6f6]`
         }>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
+          <QueryProvider>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </QueryProvider>
         </NextIntlClientProvider>
       </body>
     </html>

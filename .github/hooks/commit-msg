@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+COMMIT_MSG_FILE="$1"
+FIRST_LINE=$(head -n 1 "$COMMIT_MSG_FILE")
+
+# Format accepté :
+# type(scope): description
+# type: description
+#
+# Exemples valides :
+# feat(auth): add JWT refresh token
+# fix: handle null pointer
+# chore(ci): update workflow
+
+REGEX='^(feat|fix|docs|style|refactor|test|chore|perf|build|ci|revert)(\([a-z0-9._/-]+\))?(!)?: [a-z].{0,71}$'
+
+if [[ ! "$FIRST_LINE" =~ $REGEX ]]; then
+  echo "Erreur: format de commit invalide."
+  echo
+  echo "Format attendu :"
+  echo "  type(scope): description"
+  echo
+  echo "Exemples :"
+  echo "  feat(auth): add JWT refresh token"
+  echo "  fix(api): handle missing user"
+  echo "  docs(readme): update installation steps"
+  echo
+  echo "Types autorisés :"
+  echo "  feat, fix, docs, style, refactor, test, chore, perf, build, ci, revert"
+  exit 1
+fi
+
+if [[ "$FIRST_LINE" =~ \.$ ]]; then
+  echo "Erreur: ne termine pas le message par un point."
+  exit 1
+fi
+
+exit 0

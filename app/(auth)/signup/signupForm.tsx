@@ -11,62 +11,44 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { safeApiJson } from "@/lib/utils";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { makeSignupSchema, type SignupData } from "@/lib/schemas/auth";
 
-type SignupPayload = {
-  firstname: string;
-  lastname: string;
-  email: string;
-  password: string;
-  consent: boolean;
-  organization_name?: string;
-};
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type SignupFormProps = {
   language_code: string;
-  profile_id: number;
+  profile_id:    number;
 };
 
 type ApiLanguage = {
   code_language: string;
-  label?: string;
-  name_us?: string;
-  native_name?: string;
+  label?:        string;
+  name_us?:      string;
+  native_name?:  string;
 };
 
 type ApiProfile = {
   id_profile: number;
-  label?: string;
+  label?:     string;
 };
 
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
 function normalizeLocaleCode(value: string): "en" | "fr" | "cn" {
-  const normalized = value.trim().toLowerCase().replace("_", "-");
-
-  if (normalized === "fr" || normalized.startsWith("fr-") || normalized === "french") {
-    return "fr";
-  }
-
-  if (
-    normalized === "cn" ||
-    normalized === "zh" ||
-    normalized.startsWith("zh-") ||
-    normalized === "chinese"
-  ) {
-    return "cn";
-  }
-
+  const n = value.trim().toLowerCase().replace("_", "-");
+  if (n === "fr" || n.startsWith("fr-") || n === "french") return "fr";
+  if (n === "cn" || n === "zh" || n.startsWith("zh-") || n === "chinese") return "cn";
   return "en";
 }
 
-function isApiLanguage(value: unknown): value is ApiLanguage {
-  if (!value || typeof value !== "object") return false;
-  const candidate = value as Partial<ApiLanguage>;
-  return typeof candidate.code_language === "string";
+function isApiLanguage(v: unknown): v is ApiLanguage {
+  return !!v && typeof v === "object" && typeof (v as ApiLanguage).code_language === "string";
 }
 
-function isApiProfile(value: unknown): value is ApiProfile {
-  if (!value || typeof value !== "object") return false;
-  const candidate = value as Partial<ApiProfile>;
-  return typeof candidate.id_profile === "number";
+function isApiProfile(v: unknown): v is ApiProfile {
+  return !!v && typeof v === "object" && typeof (v as ApiProfile).id_profile === "number";
 }
 
 function normalizeReferences(data: unknown): unknown[] {
@@ -78,205 +60,141 @@ function normalizeReferences(data: unknown): unknown[] {
 async function fetchReferences(reference: string): Promise<unknown[]> {
   try {
     const res = await fetch(`/api/references?reference=${reference}`, {
-      method: "GET",
-      cache: "no-store",
-      credentials: "include",
+      method: "GET", cache: "no-store", credentials: "include",
     });
-
     if (!res.ok) return [];
     const data = await safeApiJson<Record<string, unknown> | Array<Record<string, unknown>>>(res);
-    if (!data) return [];
-    return normalizeReferences(data);
+    return data ? normalizeReferences(data) : [];
   } catch {
     return [];
   }
 }
 
+// ─── Composant ───────────────────────────────────────────────────────────────
+
 export default function SignupForm({ language_code, profile_id }: SignupFormProps) {
-  const t = useTranslations("Signup");
-  const router = useRouter();
+  const t          = useTranslations("Signup");
+  const router     = useRouter();
   const searchParams = useSearchParams();
 
-  const [form, setForm] = React.useState<SignupPayload>({
-    firstname: "",
-    lastname: "",
-    email: "",
-    password: "",
-    consent: false,
-    organization_name: "",
-  });
-
-  const [loading, setLoading] = React.useState(false);
-  const [errors, setErrors] = React.useState<string[]>([]);
+  // ── Références API (affichage langue / profil) ───────────────────────────
   const [languageReferences, setLanguageReferences] = React.useState<ApiLanguage[]>([]);
-  const [profileReferences, setProfileReferences] = React.useState<ApiProfile[]>([]);
-  const verificationError =
-    searchParams.get("verification") === "error"
-      ? searchParams.get("message") || t("verificationFailed")
-      : null;
-  const displayedErrors = errors.length > 0
-    ? errors
-    : verificationError
-      ? [verificationError]
-      : [];
+  const [profileReferences,  setProfileReferences]  = React.useState<ApiProfile[]>([]);
 
   React.useEffect(() => {
-    const loadReferences = async () => {
-      const [languagesRaw, profilesRaw] = await Promise.all([
+    const load = async () => {
+      const [langRaw, profRaw] = await Promise.all([
         fetchReferences("languages"),
         fetchReferences("profiles"),
       ]);
-
-      setLanguageReferences(languagesRaw.filter(isApiLanguage));
-      setProfileReferences(profilesRaw.filter(isApiProfile));
+      setLanguageReferences(langRaw.filter(isApiLanguage));
+      setProfileReferences(profRaw.filter(isApiProfile));
     };
-
-    void loadReferences();
+    void load();
   }, []);
 
   const languageDisplay = React.useMemo(() => {
-    const normalizedCode = normalizeLocaleCode(language_code);
-    const languageRef = languageReferences.find(
-      (item) => normalizeLocaleCode(item.code_language) === normalizedCode
-    );
-    const translationKey = languageRef?.label?.trim();
-
-    if (translationKey && t.has(`languages.${translationKey}`)) {
-      return t(`languages.${translationKey}`);
-    }
-
-    if (normalizedCode === "fr") return t("languages.french");
-    if (normalizedCode === "cn") return t("languages.chinese");
+    const code = normalizeLocaleCode(language_code);
+    const ref  = languageReferences.find((i) => normalizeLocaleCode(i.code_language) === code);
+    const key  = ref?.label?.trim();
+    if (key && t.has(`languages.${key}`)) return t(`languages.${key}`);
+    if (code === "fr") return t("languages.french");
+    if (code === "cn") return t("languages.chinese");
     return t("languages.english");
   }, [language_code, languageReferences, t]);
 
   const profileDisplay = React.useMemo(() => {
-    const profileRef = profileReferences.find((item) => item.id_profile === profile_id);
-    const translationKey = profileRef?.label?.trim();
-
-    if (translationKey && t.has(`profiles.${translationKey}`)) {
-      return t(`profiles.${translationKey}`);
-    }
-
+    const ref = profileReferences.find((i) => i.id_profile === profile_id);
+    const key = ref?.label?.trim();
+    if (key && t.has(`profiles.${key}`)) return t(`profiles.${key}`);
     if (profile_id === 1) return t("profiles.organizationOwner");
     if (profile_id === 2) return t("profiles.studioStaff");
     return t("profiles.memberFamily");
   }, [profile_id, profileReferences, t]);
 
-  function update<K extends keyof SignupPayload>(key: K, value: SignupPayload[K]) {
-    setForm((f) => ({ ...f, [key]: value }));
-  }
+  // ── Erreur de vérification depuis URL ────────────────────────────────────
+  const verificationError =
+    searchParams.get("verification") === "error"
+      ? searchParams.get("message") || t("verificationFailed")
+      : null;
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setErrors([]);
+  // ── React Hook Form ──────────────────────────────────────────────────────
+  // Le schéma est recréé si profile_id change (validation conditionnelle org)
+  const schema = React.useMemo(
+    () => makeSignupSchema({
+      fillRequired:         t("fillRequired"),
+      emailInvalid:         t("emailInvalid"),
+      passwordMin:          t("passwordMin"),
+      passwordUpper:        t("passwordUpper"),
+      passwordLower:        t("passwordLower"),
+      passwordDigit:        t("passwordDigit"),
+      passwordSpecial:      t("passwordSpecial"),
+      consentRequired:      t("consentRequired"),
+      organizationRequired: t("organizationRequired"),
+    }, profile_id),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [profile_id],           // ne pas inclure t() — next-intl est stable
+  );
 
-    const validationErrors: string[] = [];
-    const normalizedEmail = form.email.trim();
+  const {
+    register,
+    handleSubmit,
+    control,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<SignupData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      firstname:         "",
+      lastname:          "",
+      email:             "",
+      password:          "",
+      consent:           false,
+      organization_name: "",
+    },
+  });
 
-    // Basic validation
-    if (!form.firstname || !form.lastname || !normalizedEmail || !form.password) {
-      validationErrors.push(t("fillRequired"));
-    }
-    // Simple email regex for basic validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (normalizedEmail && !emailRegex.test(normalizedEmail)) {
-      validationErrors.push(t("emailInvalid"));
-    }
-    // Password strength checks aligned with backend
-    if (form.password) {
-      if (form.password.length < 10) {
-        validationErrors.push(t("passwordMin"));
-      }
-      if (!/[A-Z]/.test(form.password)) {
-        validationErrors.push(t("passwordUpper"));
-      }
-      if (!/[a-z]/.test(form.password)) {
-        validationErrors.push(t("passwordLower"));
-      }
-      if (!/\d/.test(form.password)) {
-        validationErrors.push(t("passwordDigit"));
-      }
-      if (!/[^A-Za-z0-9]/.test(form.password)) {
-        validationErrors.push(t("passwordSpecial"));
-      }
-    }
-    // Consent check
-    if (!form.consent) {
-      validationErrors.push(t("consentRequired"));
-    }
-    // If profile is organization, organization_name is required
-    if (profile_id === 1 && !form.organization_name) {
-      validationErrors.push(t("organizationRequired"));
-    }
+  // ── Submit ───────────────────────────────────────────────────────────────
+  async function onSubmit(data: SignupData) {
+    const res = await fetch("/api/auth/signup", {
+      method:      "POST",
+      headers:     { "Content-Type": "application/json" },
+      credentials: "include",
+      body:        JSON.stringify({ ...data, language_code, profile_id }),
+    });
 
-    if (validationErrors.length > 0) {
-      setErrors(validationErrors);
+    if (!res.ok) {
+      const payload = await res.json().catch(() => null);
+      const msg =
+        (typeof payload?.message === "string" && payload.message.trim()) ? payload.message :
+        (typeof payload?.details === "string" && payload.details.trim())  ? payload.details :
+        t("signupFailedTryAgain");
+      setError("root", { message: msg });
       return;
     }
 
-    setLoading(true);
-    try {
-      const res = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          ...form,
-          language_code,
-          profile_id: profile_id,
-        }),
-      });
-      
-      if (!res.ok) {
-        const payload = await res.json().catch(() => null);
-        console.error("Signup error response:", payload);
-        const backendErrors: string[] = [];
-        if (typeof payload?.message === "string" && payload.message.trim()) {
-          backendErrors.push(payload.message);
-        }
-        if (typeof payload?.details === "string" && payload.details.trim()) {
-          backendErrors.push(payload.details);
-        }
-        setErrors(backendErrors.length > 0 ? backendErrors : [t("signupFailedTryAgain")]);
-        return;
-      }
-
-      const query = new URLSearchParams({
-        verified: "1",
-        message: t("checkEmailToValidate"),
-      });
-      router.replace(`/login?${query.toString()}`);
-    } catch (err) {
-      setErrors([err instanceof Error ? err.message : t("signupFailed")]);
-    } finally {
-      setLoading(false);
-    }
+    const query = new URLSearchParams({ verified: "1", message: t("checkEmailToValidate") });
+    router.replace(`/login?${query.toString()}`);
   }
 
+  // ─── Rendu ────────────────────────────────────────────────────────────────
   return (
     <>
       <div className="flex flex-col relative z-10 mb-5">
         <motion.form
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          onSubmit={onSubmit}
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+          onSubmit={handleSubmit(onSubmit)}
           noValidate
           className="flex flex-col h-full"
         >
+          {/* ── Header ── */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
+            initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
             className="mb-8"
           >
             <h2 className="text-3xl font-bold text-gray-900">{t("title")}</h2>
             <p className="text-gray-600 mt-2">
-              {t("languageProfile", {
-                language: languageDisplay,
-                profile: profileDisplay,
-              })}
+              {t("languageProfile", { language: languageDisplay, profile: profileDisplay })}
             </p>
             {profile_id === 3 && (
               <p className="text-gray-600 mt-2 font-bold">{t("minorHint")}</p>
@@ -284,124 +202,143 @@ export default function SignupForm({ language_code, profile_id }: SignupFormProp
           </motion.div>
 
           <div className="space-y-4">
-            {displayedErrors.length > 0 && (
+            {/* Erreur globale (root) ou erreur de vérification depuis URL */}
+            {(errors.root || verificationError) && (
               <Alert variant="destructive">
                 <AlertDescription>
-                  <ul className="list-disc pl-5 space-y-1">
-                    {displayedErrors.map((message, index) => (
-                      <li key={`${message}-${index}`}>{message}</li>
-                    ))}
-                  </ul>
+                  {errors.root?.message ?? verificationError}
                 </AlertDescription>
               </Alert>
             )}
+
+            {/* Organisation (Owner uniquement) */}
             {profile_id === 1 && (
-            <div className="space-y-2">
-              <Label 
-              htmlFor="organization" 
-              className="mb-1 block text-sm"
-              >{t("organizationName")} *</Label>
-              <Input
-                id="organization"
-                type="text"
-                className="w-full flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-organization/50"
-                autoComplete="organization"
-                value={form.organization_name || ""}
-                onChange={(e) => update("organization_name", e.target.value)}
-                disabled={loading}
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="organization" className="mb-1 block text-sm">
+                  {t("organizationName")} *
+                </Label>
+                <Input
+                  id="organization"
+                  type="text"
+                  autoComplete="organization"
+                  disabled={isSubmitting}
+                  className={`w-full flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-organization/50 ${
+                    errors.organization_name ? "border-red-400" : ""
+                  }`}
+                  {...register("organization_name")}
+                />
+                {errors.organization_name && (
+                  <p className="text-xs text-red-500">{errors.organization_name.message}</p>
+                )}
+              </div>
             )}
+
+            {/* Prénom / Nom */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label 
-                htmlFor="firstname"
-                className="mb-1 block text-sm"
-                >{t("firstName")} *</Label>
+                <Label htmlFor="firstname" className="mb-1 block text-sm">{t("firstName")} *</Label>
                 <Input
                   id="firstname"
-                  className="w-full flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-organization/50"
-                  value={form.firstname}
-                  onChange={(e) => update("firstname", e.target.value)}
-                  disabled={loading}
+                  disabled={isSubmitting}
+                  className={`w-full flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-organization/50 ${
+                    errors.firstname ? "border-red-400" : ""
+                  }`}
+                  {...register("firstname")}
                 />
+                {errors.firstname && (
+                  <p className="text-xs text-red-500">{errors.firstname.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
-                <Label 
-                htmlFor="lastname"
-                className="mb-1 block text-sm"
-                >{t("lastName")} *</Label>
+                <Label htmlFor="lastname" className="mb-1 block text-sm">{t("lastName")} *</Label>
                 <Input
                   id="lastname"
-                  className="w-full flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-organization/50"
-                value={form.lastname}
-                  onChange={(e) => update("lastname", e.target.value)}
-                  disabled={loading}
+                  disabled={isSubmitting}
+                  className={`w-full flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-organization/50 ${
+                    errors.lastname ? "border-red-400" : ""
+                  }`}
+                  {...register("lastname")}
                 />
+                {errors.lastname && (
+                  <p className="text-xs text-red-500">{errors.lastname.message}</p>
+                )}
               </div>
             </div>
 
+            {/* Email */}
             <div className="space-y-2">
-              <Label 
-              htmlFor="email"
-              className="mb-1 block text-sm"
-              >{t("email")} *</Label>
+              <Label htmlFor="email" className="mb-1 block text-sm">{t("email")} *</Label>
               <Input
                 id="email"
                 type="email"
-                className="w-full flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-organization/50"
                 autoComplete="email"
-                value={form.email}
-                onChange={(e) => update("email", e.target.value)}
-                disabled={loading}
+                disabled={isSubmitting}
+                className={`w-full flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-organization/50 ${
+                  errors.email ? "border-red-400" : ""
+                }`}
+                {...register("email")}
               />
+              {errors.email && (
+                <p className="text-xs text-red-500">{errors.email.message}</p>
+              )}
             </div>
 
+            {/* Mot de passe */}
             <div className="space-y-2">
-              <Label 
-              htmlFor="password"
-              className="mb-1 block text-sm"
-              >{t("password")} *</Label>
+              <Label htmlFor="password" className="mb-1 block text-sm">{t("password")} *</Label>
               <Input
                 id="password"
                 type="password"
-                className="w-full flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-organization/50"
                 autoComplete="new-password"
-                value={form.password}
-                onChange={(e) => update("password", e.target.value)}
-                disabled={loading}
+                disabled={isSubmitting}
+                className={`w-full flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-organization/50 ${
+                  errors.password ? "border-red-400" : ""
+                }`}
+                {...register("password")}
               />
-              <p className="text-xs text-gray-500">
-                {t("passwordHint")}
-              </p>
+              <p className="text-xs text-gray-500">{t("passwordHint")}</p>
+              {errors.password && (
+                <p className="text-xs text-red-500">{errors.password.message}</p>
+              )}
             </div>
 
+            {/* Consentement */}
             <div className="flex flex-row mt-4 text-sm text-gray-600 space-x-2">
-              <Checkbox
-                id="consent"
-                checked={form.consent}
-                onCheckedChange={(v) => update("consent", Boolean(v))}
-                disabled={loading}
+              {/* Checkbox utilise Controller car ce n'est pas un input HTML natif */}
+              <Controller
+                name="consent"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    id="consent"
+                    checked={field.value}
+                    onCheckedChange={(v) => field.onChange(Boolean(v))}
+                    disabled={isSubmitting}
+                  />
+                )}
               />
               <Label htmlFor="consent" className="leading-snug inline-block text-xs text-gray-600">
-                {t("consentPrefix")} <Link href="/terms-and-privacy" className="underline">{t("termsPrivacy")}</Link>.
+                {t("consentPrefix")}{" "}
+                <Link href="/terms-and-privacy" className="underline">{t("termsPrivacy")}</Link>.
               </Label>
             </div>
+            {errors.consent && (
+              <p className="text-xs text-red-500">{errors.consent.message}</p>
+            )}
           </div>
 
+          {/* ── Bouton submit ── */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
             className="mt-auto pt-8"
           >
             <button
               type="submit"
-              disabled={loading}
+              disabled={isSubmitting}
               className="w-full bg-organization hover:bg-organization/90 text-white font-bold py-5 rounded-2xl shadow-lg shadow-organization/25 transition-all active:scale-[0.98] flex items-center justify-center space-x-3 group cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <span className="text-lg">{loading ? t("submitting") : t("submit")}</span>
+              <span className="text-lg">{isSubmitting ? t("submitting") : t("submit")}</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
           </motion.div>

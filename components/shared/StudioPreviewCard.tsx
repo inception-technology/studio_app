@@ -12,6 +12,7 @@ type StudioPreviewCardProps = {
   id:number,
   name:string,
   location:string,
+  status:string,
   members:number,
   finance:number,
   img_url:string
@@ -21,6 +22,7 @@ export default function StudioPreviewCard({
   id,
   name,
   location,
+  status,
   members,
   finance,
   img_url
@@ -40,8 +42,12 @@ export default function StudioPreviewCard({
         </div>
         <div className="flex-1">
           <div className="flex items-center justify-between mb-0.5">
-            <h3 className="font-bold text-slate-900 dark:text-white">{capitalize(name)}</h3>
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500"></span>
+            <h3 className="font-bold text-slate-900 dark:text-white">{capitalize(name)} - {status}</h3>
+            <span
+              className={`flex h-3 w-3 rounded-full ${
+                status === "active" ? "bg-emerald-500" : "bg-slate-500"
+              }`}
+            />
           </div>
           <p className="text-xs text-slate-500 mb-2">{capitalize(location)}</p>
           <div className="flex items-center gap-3">

@@ -18,65 +18,17 @@ import {
 import Image from "next/image";
 import Link from 'next/link';
 import StudioPreviewCard from "@/components/shared/StudioPreviewCard";
-import { MyStudios } from "@/lib/mock-data";
-
-// // Function to fetch dashboard data (e.g., users list)
-// async function fetchDashboardData(): Promise<Member[]> {
-//   try {
-//     const res = await fetch("/api/member/all", {
-//       method: "GET",
-//       cache: "no-store",
-//     });
-//     if (!res.ok) return [];
-//     const data = await safeApiJson<Member[] | null>(res);
-//     console.log("Raw data from /api/member/all:", data); // Debug log the raw data received from the API
-//     if (!data) return [];
-//     const users: Member[] = Array.isArray(data)
-//       ? data
-//       : data
-//         ? Object.values(data)
-//         : [];
-//     return users;
-//   } catch (error) {
-//     console.error("Error fetching data:", error);
-//     return [];
-//   }
-// };
-
-const GlobalPerformance = {
-  "revenue":{
-    "currency": "$",
-    "monthly":45200.00,
-    "rate":12.4
-  },
-  "students":{
-    "total":1240,
-    "pending_joins": 4
-  }
-}
+import { useStudios } from "@/hooks/useStudios";
 
 
 const DashboardPage = () => {
-  
+
   const { isLoading, isAuthenticated } = useAuth();
+  const { cardProps, totalMembers, totalPendingJoins, isFetching } = useStudios();
   const router = useRouter();
 
   useEffect(() => {
-    if (isLoading) return;
-    if (!isAuthenticated) {
-      router.replace("/login");
-      return;
-    }
-    let alive = true;
-    (async () => {
-      //const users = await fetchDashboardData();
-      //console.log("Fetched dashboard data:", users); // Debug log for fetched data
-      //if (alive) setDashboardData(users);
-      if (alive) console.warn("Dashboard data fetching is currently disabled. Please implement fetchDashboardData function to load real data.");
-    })();
-    return () => {
-      alive = false;
-    };
+    if (!isLoading && !isAuthenticated) router.replace("/login");
   }, [isLoading, isAuthenticated, router]);
 
   if (isLoading) {
@@ -122,15 +74,21 @@ const DashboardPage = () => {
         <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
         <span className="material-icons text-organization text-xl mb-2"><UsersRound color="red"/></span>
         <p className="text-slate-500 text-[10px] font-bold uppercase">Total Students</p>
-        <p className="text-xl font-bold">1,240</p>
+        <p className="text-xl font-bold">
+          {isFetching ? <span className="animate-pulse text-slate-300">···</span> : totalMembers.toLocaleString()}
+        </p>
         <p className="text-[10px] text-slate-400 mt-1">across all locations</p>
         </div>
 
         <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
         <span className="material-icons text-organization text-xl mb-2"><ClipboardPen color="red"/></span>
         <p className="text-slate-500 text-[10px] font-bold uppercase">Pending Joins</p>
-        <p className="text-xl font-bold">4</p>
-        <p className="text-[10px] text-organization font-medium mt-1">Requires action</p>
+        <p className="text-xl font-bold">
+          {isFetching ? <span className="animate-pulse text-slate-300">···</span> : totalPendingJoins}
+        </p>
+        {totalPendingJoins > 0 && (
+          <p className="text-[10px] text-organization font-medium mt-1">Requires action</p>
+        )}
         </div>
         </div>
 
@@ -179,59 +137,6 @@ const DashboardPage = () => {
           </div>
         </div>
       </section>
-
-      <section>
-
-        <div className="flex items-center justify-between mb-4 px-1">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 cursor-pointer"><Link href={`/studios`}>My Studios (3)</Link></h2>
-          <button className="text-organization text-xs font-bold uppercase cursor-pointer">View Map</button>
-        </div>
-
-        <div className="space-y-3">
-          <ul>
-              {MyStudios.map((studio) => (
-                  <li className="bg-white dark:bg-slate-900 p-4 mb-2 mt-2 rounded-xl border border-slate-100 dark:border-slate-800 flex items-center gap-4 group"
-                  key={studio.id}>
-                  <StudioPreviewCard 
-                  id={studio.id}
-                  name={studio.name}
-                  location={studio.location}
-                  members={studio.members}
-                  finance={studio.finance}
-                  img_url={studio.img_url}
-                  />
-              </li>
-              ))}
-          <li className="bg-white dark:bg-slate-900 p-4  rounded-xl border border-dashed border-organization/30 flex items-center gap-4 group">
-            <div className="w-14 h-14 rounded-lg bg-organization/5 shrink-0 flex items-center justify-center">
-              <span className="material-icons text-organization/40"><Construction/></span>
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-0.5">
-                <h3 className="font-bold text-slate-900 dark:text-white">North Branch</h3>
-                <span className="text-[9px] font-black uppercase text-organization bg-organization/10 px-1.5 py-0.5 rounded">Setup</span>
-              </div>
-              <p className="text-xs text-slate-500 mb-2">Legacy Park Area</p>
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400">
-                  <span className="material-icons text-[14px]"><UserRound/></span> 0
-                </div>
-                <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400">
-                  <span className="material-icons text-[14px]"><Banknote/></span> $0.00
-                </div>
-              </div>
-            </div>
-            <span className="material-icons text-slate-300 group-active:text-organization"><ChevronRight/></span>
-          </li>
-          </ul>
-        </div>
-
-      </section>
-
-      <button className="w-full mt-10 mb-10 bg-organization hover:bg-red-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-organization/20 flex items-center justify-center gap-2 mb-8 transition-transform active:scale-95 cursor-pointer">
-        <span className="material-icons"><HousePlus/></span>
-        <span>Add New Studio</span>
-      </button>
 
     </div>
   );

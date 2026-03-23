@@ -1,9 +1,9 @@
 /**
- * proxy.ts  (remplace middleware.ts — déprécié en Next.js 16.2.1)
+ * middleware.ts
  *
  * Couche 1 du RBAC — vérification de l'AUTHENTIFICATION uniquement.
  *
- * Le proxy s'exécute dans l'Edge Runtime (V8 isolate) :
+ * Le middleware s'exécute dans l'Edge Runtime (V8 isolate) :
  * ✅ peut lire les cookies de la requête
  * ❌ ne peut PAS accéder à Redis / à la session complète
  *
@@ -16,7 +16,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { COOKIE } from "@/lib/cookie";
 
-export function proxy(req: NextRequest) {
+export function middleware(req: NextRequest) {
   const sid = req.cookies.get(COOKIE)?.value;
 
   if (!sid) {
@@ -38,6 +38,5 @@ export const config = {
     "/reports/:path*",
     "/finance/:path*",
     "/settings/:path*",
-    "/assistant/:path*",
   ],
 };

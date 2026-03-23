@@ -116,6 +116,134 @@
 }
 
 /* =========================
+   CalendarPage — FullCalendar overrides
+   Adapte le rendu de FullCalendar au design system Dojang Studio
+   ========================= */
+
+/* Conteneur */
+.fc-custom .fc {
+  font-family: inherit;
+}
+
+/* Header des colonnes (Lun., Mar...) */
+.fc-custom .fc-col-header-cell {
+  background-color: #f8fafc;
+  border-color: #e2e8f0 !important;
+  padding: 8px 0;
+}
+.fc-custom .fc-col-header-cell-cushion {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  text-decoration: none !important;
+}
+
+/* Jour actif (aujourd'hui) */
+.fc-custom .fc-day-today {
+  background-color: oklch(0.526 0.216 29.5 / 0.04) !important;
+}
+.fc-custom .fc-day-today .fc-daygrid-day-number,
+.fc-custom .fc-day-today .fc-col-header-cell-cushion {
+  color: var(--color-organization) !important;
+  font-weight: 800;
+}
+
+/* Numéros de jours */
+.fc-custom .fc-daygrid-day-number {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+  text-decoration: none !important;
+  padding: 4px 8px;
+}
+
+/* Bordures de grille */
+.fc-custom .fc-scrollgrid {
+  border-color: #e2e8f0 !important;
+}
+.fc-custom td,
+.fc-custom th {
+  border-color: #e2e8f0 !important;
+}
+
+/* Labels horaires (07:00, 07:30...) */
+.fc-custom .fc-timegrid-slot-label-cushion {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+/* Événements */
+.fc-custom .fc-event {
+  border-radius: 6px !important;
+  border-width: 0 !important;
+  border-left: 3px solid rgba(0,0,0,0.15) !important;
+  padding: 2px 4px;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+.fc-custom .fc-event:hover {
+  filter: brightness(0.9);
+}
+.fc-custom .fc-event-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fc-custom .fc-event-time {
+  font-size: 0.65rem;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+/* Indicateur "maintenant" */
+.fc-custom .fc-timegrid-now-indicator-line {
+  border-color: var(--color-organization) !important;
+  border-width: 2px !important;
+}
+.fc-custom .fc-timegrid-now-indicator-arrow {
+  border-top-color: var(--color-organization) !important;
+  border-bottom-color: var(--color-organization) !important;
+}
+
+/* Vue Liste */
+.fc-custom .fc-list-day-cushion {
+  background-color: #f1f5f9 !important;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #475569;
+}
+.fc-custom .fc-list-event:hover td {
+  background-color: #f8fafc !important;
+}
+.fc-custom .fc-list-event-title a {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e293b !important;
+  text-decoration: none !important;
+}
+.fc-custom .fc-list-event-time {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* Message "pas d'événements" */
+.fc-custom .fc-list-empty {
+  background-color: #f8fafc;
+}
+.fc-custom .fc-list-empty-cushion {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+/* =========================
    Responsive
    ========================= */
 
