@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import "@/styles/components.css"
 import { getTranslations } from "next-intl/server";
 
@@ -8,8 +7,11 @@ export default async function AuthSidebar() {
 
   return (
     <>
-      <Link href="/" className="logo-link">
-        <Image src="/logo_dojang.png" alt={t("logoAlt")} width={150} height={150} className="logo-img" loading="eager"/>
+      <Link href="/" className="logo-link flex items-center gap-4">
+        <span
+          className="material-icons bg-organization text-white"
+          aria-label={t("logoAlt")}
+        >{"sports_martial_arts"}</span>
       </Link>
       <div className="content-container">
         <h1 className="title">{t("title")}</h1>

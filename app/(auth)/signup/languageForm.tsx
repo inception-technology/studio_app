@@ -5,7 +5,7 @@ import { Check, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { safeApiJson } from "@/lib/utils";
+import { fetchReferences } from "@/lib/references";
 
 interface Language {
   code_language: string;
@@ -54,24 +54,6 @@ function normalizeLanguages(data: unknown): Language[] {
   return [];
 }
 
-
-async function fetchReferences(reference: string): Promise<Language[]> {
-  try {
-    const res = await fetch(`/api/references?reference=${reference}`, {
-      method: "GET",
-      cache: "no-store",
-      credentials: "include",
-    });
-    if (!res.ok) return [];
-    const data = await safeApiJson<Record<string, unknown> | Array<Record<string, unknown>>>(res);
-    if (!data) return [];
-    return normalizeLanguages(data);
-  } catch (error) {
-    console.error("Error fetching language data:", error);
-    return [];
-  }
-}
-
 export default function LanguageForm({ onContinue }: { onContinue?: (langCode: string) => void }) {
   const t = useTranslations("LanguageForm");
   const locale = useLocale();
@@ -101,7 +83,7 @@ export default function LanguageForm({ onContinue }: { onContinue?: (langCode: s
   };
 
   useEffect(() => {
-    fetchReferences("languages").then((data) => {
+    fetchReferences<Language>("languages", normalizeLanguages).then((data) => {
       setLanguages(data);
     });
   }, []);

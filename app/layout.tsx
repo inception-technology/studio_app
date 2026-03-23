@@ -15,8 +15,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "App Dojang Studio",
-  description: "Manage your Dojang studio with ease.",
+  title: "Dojang Taekwondo App",
+  description: "Manage your organization with ease.",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+  },
 };
 
 export default async function RootLayout({

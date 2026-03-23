@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { safeApiJson } from "@/lib/utils";
+import { fetchReferences } from "@/lib/references";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { makeSignupSchema, type SignupData } from "@/lib/schemas/auth";
@@ -51,23 +51,10 @@ function isApiProfile(v: unknown): v is ApiProfile {
   return !!v && typeof v === "object" && typeof (v as ApiProfile).id_profile === "number";
 }
 
-function normalizeReferences(data: unknown): unknown[] {
+function normalizeReferenceItems(data: unknown): unknown[] {
   if (Array.isArray(data)) return data;
   if (data && typeof data === "object") return Object.values(data);
   return [];
-}
-
-async function fetchReferences(reference: string): Promise<unknown[]> {
-  try {
-    const res = await fetch(`/api/references?reference=${reference}`, {
-      method: "GET", cache: "no-store", credentials: "include",
-    });
-    if (!res.ok) return [];
-    const data = await safeApiJson<Record<string, unknown> | Array<Record<string, unknown>>>(res);
-    return data ? normalizeReferences(data) : [];
-  } catch {
-    return [];
-  }
 }
 
 // ─── Composant ───────────────────────────────────────────────────────────────
@@ -76,6 +63,21 @@ export default function SignupForm({ language_code, profile_id }: SignupFormProp
   const t          = useTranslations("Signup");
   const router     = useRouter();
   const searchParams = useSearchParams();
+  const baseButton =
+    "w-full text-white font-bold py-5 rounded-2xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center space-x-3 group cursor-pointer disabled:cursor-not-allowed disabled:opacity-50";
+
+  const buttonProfile = React.useMemo(() => {
+    switch (profile_id) {
+      case 1:
+        return `${baseButton} bg-organization hover:bg-organization/90 shadow-organization/25`;
+      case 2:
+        return `${baseButton} bg-staff hover:bg-staff/90 shadow-staff/25`;
+      case 3:
+        return `${baseButton} bg-member hover:bg-member/90 shadow-member/25`;
+      default:
+        return baseButton;
+    }
+  }, [profile_id]);
 
   // ── Références API (affichage langue / profil) ───────────────────────────
   const [languageReferences, setLanguageReferences] = React.useState<ApiLanguage[]>([]);
@@ -84,8 +86,8 @@ export default function SignupForm({ language_code, profile_id }: SignupFormProp
   React.useEffect(() => {
     const load = async () => {
       const [langRaw, profRaw] = await Promise.all([
-        fetchReferences("languages"),
-        fetchReferences("profiles"),
+        fetchReferences<unknown>("languages", normalizeReferenceItems),
+        fetchReferences<unknown>("profiles", normalizeReferenceItems),
       ]);
       setLanguageReferences(langRaw.filter(isApiLanguage));
       setProfileReferences(profRaw.filter(isApiProfile));
@@ -336,7 +338,7 @@ export default function SignupForm({ language_code, profile_id }: SignupFormProp
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-organization hover:bg-organization/90 text-white font-bold py-5 rounded-2xl shadow-lg shadow-organization/25 transition-all active:scale-[0.98] flex items-center justify-center space-x-3 group cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+              className={buttonProfile}
             >
               <span className="text-lg">{isSubmitting ? t("submitting") : t("submit")}</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

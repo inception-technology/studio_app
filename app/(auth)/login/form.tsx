@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useLocale, useTranslations } from "next-intl";
-import { safeApiJson } from "@/lib/utils";
+import { fetchReferences } from "@/lib/references";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { makeLoginSchema, type LoginData } from "@/lib/schemas/auth";
@@ -49,16 +49,7 @@ function normalizeLanguages(data: unknown): Language[] {
 }
 
 async function fetchLanguages(): Promise<Language[]> {
-  try {
-    const res = await fetch("/api/references?reference=languages", {
-      method: "GET", cache: "no-store", credentials: "include",
-    });
-    if (!res.ok) return [];
-    const data = await safeApiJson<Record<string, unknown> | Array<Record<string, unknown>>>(res);
-    return data ? normalizeLanguages(data) : [];
-  } catch {
-    return [];
-  }
+  return fetchReferences<Language>("languages", normalizeLanguages);
 }
 
 // ─── Composant ───────────────────────────────────────────────────────────────
